@@ -1,0 +1,27 @@
+{
+	"name": "nettsperre-svelte-web",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"svelte": "^4.2.7",
+		"vite": "^5.0.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"@azure/msal-browser": "^3.23.0",
+		"@azure/msal-node": "^2.13.1",
+		"@vtfk/logger": "^6.1.1",
+		"axios": "^1.7.7",
+		"jwt-decode": "^4.0.0",
+		"node-cache": "^5.1.2",
+		"node-schedule": "^2.1.1"
+	}
+}

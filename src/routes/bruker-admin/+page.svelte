@@ -1,0 +1,1 @@
+Her kommer en side for superbrukere. Her kan du sette klasser i sperremodus for andre lærere.

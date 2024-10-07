@@ -1,0 +1,1 @@
+Her kommer en hjelpeside for å forklare hvordan løsningen fungerer.
