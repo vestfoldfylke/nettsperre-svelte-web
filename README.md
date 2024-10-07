@@ -9,36 +9,24 @@ NETTSPERRE-EKSAMEN-MAN
 <!-- NETTSPERRE-TEAMS-MAN  -->
 NETTSPERRE-OFFLINE-MAN
 
-### Eksamens script må være klart om 1.5 mnd 
-Samme som i fjor, med filer. 
-Skrive om script til å bruke graph og sende eleven inn i gruppene i entraID
-Sjekke begrensingene på graph og innmelding av 4000+ enkelt elever/personer inn i gruppene.
-
 ### Database
 Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
 Historie - inneholder alle sperringer som er utgått
-
-### Stats
-Antall eleversperret (Denne vil kun være på når sperringen blir opprettet, kan bruke ID fra dokumentet til å koble sammen med åpning og sperring)
-1 oppføring i stats er enten enn åpning av sperring eller en sperring 
-type sperring: Eksamen, FullBlock
-document id fra mongodb (kobler sammen åpning og sperring)
-date ++ (standard oppføringer mot stats)
 
 # Nettsperre
 En Webapp med sveltekit. 
 Løsningen gir lærere og andre superbrukere mulighet til å sperre undervisningsgrupper og enkelt elever fra ulike løsninger og internett. 
 
 De ulike sperrene: 
-1. Prøve.
-2. Kun tilgang til teams.
+1. Prøve. (TBA)
+2. Kun tilgang til teams. (TBA)
 3. Eksamen.
 4. Offline (Ingen tilgang til internett eller andre løsninger).
 
 ## Deploye løsningen 
 TODO :)
 ## Beskrivelse av løsningen 
-Lønsingen er et monorepo med både frontend og backend i samme repo. 
+TODO :)
 ## Frontend
 TODO :)
 ## Backend
