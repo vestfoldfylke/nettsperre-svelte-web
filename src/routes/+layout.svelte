@@ -6,7 +6,7 @@
     import { page } from '$app/stores'
     import { goto } from '$app/navigation'
     import logoTFK from '$lib/assets/logo.svg'
-    import logoVFK from '$lib/assets/vfk_logo.svg'
+    import logoVFK from '$lib/assets/VFK_logo.svg'
     import favTFK from '$lib/assets/favicon-32x32.png'
     import favVFK from '$lib/assets/vestfold-favicon-32x32.png'
     import IconSpinner from '../lib/components/IconSpinner.svelte'
