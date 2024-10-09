@@ -262,14 +262,17 @@
                         {#if showBlock[i] || showStudents[i]}
                         <h3>Velg den sperremodusen du ønsker å bruke.</h3>
                         <div class="blockSelection">
-                            <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
-                            <label for="radio1" value="">Eksamensmodus</label>
+                            {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
+                                <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
+                                <label for="radio1" value="">Eksamensperre</label>
+                            {/if}
 
                             <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
                             <label for="radio2" value="">Prøvemodus</label> -->
-
-                            <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
-                            <label for="radio3" value="">Ingen internett tilgang</label>
+                            {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
+                                <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
+                                <label for="radio3" value="">Ingen internett tilgang</label>
+                            {/if}
                         </div>
                         <h3>Velg tidspunkt for sperringen.</h3>
                         <div class="dateTimePicker">

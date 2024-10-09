@@ -4,6 +4,6 @@
  */
 export const prettyPrintBlock = (blockType) => {
    if(blockType === 'fullBlock') return 'Ingen internett'
-   if(blockType === 'eksamen') return 'Eksamensmodus'
+   if(blockType === 'eksamen') return 'Eksamensperre'
   }
   

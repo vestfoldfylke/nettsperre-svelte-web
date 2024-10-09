@@ -300,14 +300,18 @@
                                     <h3>Type sperring.</h3>
                                 {/if}
                                 <div class="blockSelection">
-                                    <input type="radio"  id="radio1" name="radioGroup" value="Eksamensmodus" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
-                                    <label for="radio1" value="">Eksamensmodus</label>
+                                    {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
+                                        <input type="radio"  id="radio1" name="radioGroup" value="Eksamensmodus" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
+                                        <label for="radio1" value="">Eksamensperre</label>
+                                    {/if}
 
                                     <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
                                     <label for="radio2" value="">Prøvemodus</label> -->
 
-                                    <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
-                                    <label for="radio3" value="">Ingen internett tilgang</label>
+                                    {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
+                                        <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
+                                        <label for="radio3" value="">Ingen internett tilgang</label>
+                                    {/if}
                                 </div>
                                 {#if detailsData.status === 'pending'}
                                     <h3>Rediger tidspunkt for sperringen. <button icon on:click={ () => editField('date')}>{editBlockDate ? '🔒' : '🖋️'}</button></h3>
