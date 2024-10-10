@@ -102,7 +102,7 @@
     }
     if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
       sideMenuItems.push({
-        title: 'Bruker Admin',
+        title: 'Brukeradmin',
         href: '/bruker-admin',
         icon: 'supervisor_account'
       })
