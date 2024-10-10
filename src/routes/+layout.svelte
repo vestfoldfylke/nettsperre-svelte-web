@@ -100,7 +100,7 @@
         icon: 'admin_panel_settings'
       })
     }
-    if(token?.roles.includes('nettsperre.labs')) {
+    if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
       sideMenuItems.push({
         title: 'Bruker Admin',
         href: '/bruker-admin',
