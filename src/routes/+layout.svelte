@@ -76,11 +76,11 @@
     //   href: '/historikk',
     //   icon: 'history'
     // },
-    // {
-    //   title: 'Hjelp',
-    //   href: '/hjelp',
-    //   icon: 'help'
-    // },
+    {
+      title: 'Hjelp',
+      href: '/hjelp',
+      icon: 'help'
+    },
      // {
     //   title: 'Admin',
     //   href: '/admin',
