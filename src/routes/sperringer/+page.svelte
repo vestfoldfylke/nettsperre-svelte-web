@@ -4,6 +4,9 @@
     import { onMount } from "svelte";
     import { prettyPrintDate } from "../../lib/helpers/pretty-date"
     import { prettyPrintBlock } from "../../lib/helpers/pretty-block-type"
+    import { superUserImposter } from "../../lib/store"
+    import { get } from "svelte/store";
+    import { goto } from '$app/navigation'
 
     let token
     let showActive = false
@@ -19,9 +22,11 @@
     $: editBlockStudents = false
     $: processing = false
     $: isDeleteBlock = false
+    $: imposting = ''
     
     onMount( async () => {
         token = await getNettsperreToken(true)
+        imposting = get(superUserImposter)
     })
 
     const getBlocksData = async (status, upn) => {
@@ -187,6 +192,26 @@
         }
     }
 
+    const reloadPage = () => {
+        // Reset states
+        blockResponse = null
+        showDetailsState = false
+        editBlockType = false
+        editBlockDate = false
+        editBlockStudents = false
+        showActive = false
+        showPending = false
+        showDetails = []
+        blockedStudents = []
+        allStudents = []
+
+        const thisPage = window.location.pathname;
+
+        goto('/sperringer').then(
+            () => goto(thisPage)
+        );
+    }
+
 </script>
 
 <main>
@@ -211,7 +236,7 @@
                         </p>
                     </div>
                     <div class="center">
-                        <a href="/sperringer" data-sveltekit-reload >Prøv igjen</a>
+                        <button on:click={ () => reloadPage()}>Prøv igjen</button>
                     </div>
                 </div>
             </div>
@@ -250,8 +275,8 @@
                     <p>Ønsker du å gjøre endringer i sperringen eller se flere detaljer kan du gjøre det ved å trykke på "Se sperringer"</p>
                 </div>
                 <div class="center" style="gap: 0.5rem">
-                    <a href="/" data-sveltekit-reload >Dine klasser</a>
-                    <a href="/sperringer" data-sveltekit-reload >Dine sperringer</a>
+                    <button on:click={ () => goto('/')}>Dine klasser</button>
+                    <button on:click={ () => reloadPage()}>Dine sperringer</button>
                 </div>
             {:else}
                 <h1>Sperringen er slettet/avsluttet</h1>
@@ -260,8 +285,8 @@
                     <p>Ønsker du å opprette eller endre dine sperringer? </p>
                 </div>
                 <div class="center" style="gap: 0.5rem">
-                    <a href="/" data-sveltekit-reload >Dine klasser</a>
-                    <a href="/sperringer" data-sveltekit-reload >Dine sperringer</a>
+                    <button on:click={ () => goto('/')}>Dine klasser</button>
+                    <button on:click={ () => reloadPage()}>Dine sperringer</button>
                 </div>
             {/if}
         </div>
@@ -271,7 +296,7 @@
                     <IconSpinner/>
                 </div>
             {:then token}
-                {#await getBlocksData('active,pending', token.upn)}
+                {#await getBlocksData('active,pending', imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn)}
                     <div class="center">
                         <IconSpinner/>
                     </div>
@@ -366,6 +391,9 @@
                         </div>
                     {:else}
                         {#if blocks.status === 200}
+                        {#if get(superUserImposter).length !== 0}
+                            <h3 style="color: red;">Du er logget inn som: {imposting.teacher.userPrincipalName}</h3>
+                        {/if}
                         <div class="pageHeader">
                             <h1>Dine aktive sperringer</h1>
                             <button on:click={ () => showActiveBlocks()}>{showActive ? 'Skjul aktive sperringer' : 'Se aktive sperringer'}</button>
