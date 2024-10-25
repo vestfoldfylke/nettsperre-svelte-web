@@ -1,9 +1,12 @@
 <script>
     import { onMount } from "svelte";
-    import { getClasses, getStudents, getNettsperreToken, postBlock } from "../lib/useApi.js";
+    import { getClasses, getStudents, getNettsperreToken, postBlock, getExtendedUserInfo } from "../lib/useApi.js";
     import IconSpinner from "../lib/components/IconSpinner.svelte";
     import { prettyPrintDate } from "../lib/helpers/pretty-date"
     import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
+    import { get } from 'svelte/store'
+    import { superUserImposter } from "../lib/store.js";
+    import { goto } from '$app/navigation'
 
     let showStudents = []
     let showBlock = []
@@ -14,9 +17,13 @@
     $: processing = false
     $: blockResponse = null
     $: isMissingFields = false
+    $: imposting = ''
+    $: requestor = ''
 
     onMount( async () => {
         token = await getNettsperreToken(true)
+        imposting = get(superUserImposter)
+        requestor = await getExtendedUserInfo(token.upn)
     })
 
     const myClasses = async (upn) => {
@@ -58,9 +65,10 @@
             status: 'pending',
             students: [],
             teacher: {
-                teacherId: token.oid,
-                userPrincipalName: token.upn,
-                displayName: token.name,
+                teacherId: imposting.length !== 0 ? imposting.teacher.id : token.oid,
+                userPrincipalName: imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn,
+                displayName: imposting.length !== 0 ? imposting.teacher.displayName : token.name,
+                officeLocation: imposting.length !== 0 ? imposting.teacher.officeLocation : requestor.data.officeLocation,
             },
             blockedGroup: classes[i],
             typeBlock: {
@@ -71,6 +79,7 @@
                 userId: token.oid,
                 userPrincipalName: token.upn,
                 displayName: token.name,
+                officeLocation: requestor.data.officeLocation,
             },
             startBlock: undefined, // Timestamp
             endBlock: undefined, // Timestamp
@@ -149,6 +158,21 @@
             showBlock[i] = !showBlock[i]
         }
     }
+    const reloadPage = () => {
+        // Reset states
+        blockResponse = null
+        showStudents = []
+        showBlock = []
+        showStudentsState = []
+        divAlreadyOpen = []
+        missingFields = []
+
+        const thisPage = window.location.pathname;
+
+        goto('/').then(
+            () => goto(thisPage)
+        );
+    }
 
 </script>
 
@@ -169,7 +193,7 @@
                     </p>
                 </div>
                 <div class="center">
-                    <a href="/" data-sveltekit-reload >Prøv igjen</a>
+                    <button on:click={ () => reloadPage()}>Prøv igjen</button>
                 </div>
             </div>
         </div>
@@ -185,12 +209,15 @@
             <p>Ønsker du å gjøre endringer i sperringen eller se flere detaljer kan du gjøre det ved å trykke på "Se sperringer"</p>
         </div>
         <div class="center" style="gap: 0.5rem">
-            <a href="/" data-sveltekit-reload >Tilbake til dine klasser</a>
-            <a href="/sperringer" data-sveltekit-reload >Se dine sperringer</a>
+            <button on:click={ () => reloadPage()}>Tilbake til dine klasser</button>
+            <button on:click={ () => goto('/sperringer')}>Se dine sperringer</button>
         </div>
     </div>
     {:else}
         <h1>Dine klasser</h1>
+        {#if imposting.length !== 0}
+            <h3 style="color: red;">Du er logget inn som: {imposting.teacher.userPrincipalName}</h3>
+        {/if}
         <div class="classRow header">
             <div class="classInfo"><h3>Klasse</h3></div>
             <div class="classAction"><h3>Handlinger</h3></div>
@@ -201,7 +228,7 @@
                 <IconSpinner/>
             </div>
         {:then token}
-            {#await myClasses(token.upn)}
+            {#await myClasses(imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn)}
                 <div class="center">
                     <IconSpinner/>
                 </div>

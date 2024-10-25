@@ -2,6 +2,11 @@ import axios from 'axios'
 import { getMsalClient, login } from './auth/msal-auth'
 import { jwtDecode } from 'jwt-decode'
 
+/**
+ * 
+ * @param {boolean} decoded | If the token should be decoded or not
+ * @returns | The access token for the user
+ */
 export const getNettsperreToken = async (decoded) => {
   // MOCK access token for local api (the access token is just a demo token - nothing dangerous)
   // if (import.meta.env.VITE_MOCK_MSAL === 'true') return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhcGk6Ly9ibGFibGFiIiwiaXNzIjoiaHR0cHM6Ly9kdXN0LmR1c3Rlc2VuLnZ0ZmsubmV0L2hhaGFoLyIsImlhdCI6MTcwNjM2MDM5MiwibmJmIjoxNzA2MzYwMzkyLCJleHAiOjE3MDYzNjU4MjAsImFjciI6IjEiLCJhaW8iOiJiYWJhYmFiYWIiLCJhbXIiOlsicnNhIiwibWZhIl0sInJvbGVzIjpbImR1c3RfYWNjZXNzIiwiYWRtaW5fYWNjZXNzIl0sImFwcGlkIjoiZ3VkZW5lIHZlaXQiLCJhcHBpZGFjciI6IjAiLCJmYW1pbHlfbmFtZSI6IlNww7hrZWxzZSIsImdpdmVuX25hbWUiOiJEZW1vIiwiaXBhZGRyIjoiMjAwMToyMDIwOjQzNDE6ZmNiYjoyOTU5OjFjNmE6Y2RhYjoyNGUwIiwibmFtZSI6IkRlbW8gU3DDuGtlbHNlIiwib2lkIjoiMTIzNDUiLCJvbnByZW1fc2lkIjoiU1VTVVNVUyIsInJoIjoic2kgc2Vub3IiLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJtYXJpbmUiLCJ0aWQiOiJza2xlbW1lIiwidW5pcXVlX25hbWUiOiJkZW1vLnNwb2tlbHNlQHZlc3Rmb2xkZnlsa2Uubm8iLCJ1cG4iOiJkZW1vLnNwb2tlbHNlQHZlc3Rmb2xkZnlsa2Uubm8iLCJ1dGkiOiJob2hvbyIsInZlciI6IjEuMCJ9.64xzW92dVIXpZ_2OXQ6KQHITtYByDZJn1ycX3p_EkW4'
@@ -45,7 +50,7 @@ export const getNettsperreToken = async (decoded) => {
 }
 /**
  * 
- * @param {*} upn 
+ * @param {*} upn | The upn of the user to get classes for
  * @returns 
  */
 export const getClasses = async (upn) => { 
@@ -60,7 +65,7 @@ export const getClasses = async (upn) => {
 
 /**
  * 
- * @param {*} classId 
+ * @param {*} classId | The classId to get students from
  * @returns 
  */
 export const getStudents = async (classId) => {
@@ -75,7 +80,21 @@ export const getStudents = async (classId) => {
 
 /**
  * 
- * @param {Object} block 
+ * @returns | The group members of the search group
+ */
+export const getGroupMembers = async () => {
+  const token = await getNettsperreToken()
+  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getGroupMembers/${import.meta.env.VITE_SEARCH_GROUP}/false`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return response
+}
+
+/**
+ * 
+ * @param {Object} block | The block to be created
  * @returns 
  */
 export const postBlock = async (block) => { 
@@ -97,7 +116,7 @@ export const postBlock = async (block) => {
 
 /**
  * 
- * @param {Object} block 
+ * @param {Object} block | The block to be updated
  * @returns 
  */
 export const putBlock = async (block) => {
@@ -119,8 +138,8 @@ export const putBlock = async (block) => {
 
 /**
  * 
- * @param {String || Comma separated string} status
- * @param {String} upn
+ * @param {String} status | Comma separated string of statuses
+ * @param {String} upn | The upn of the user to get blocks for
  */
 export const getBlocks = async (status, upn) => {
   const token = await getNettsperreToken()
@@ -153,6 +172,12 @@ export const getBlocks = async (status, upn) => {
   return response
 }
 
+/**
+ * 
+ * @param {Object} block | The block to be deleted
+ * @param {String} action | The action to be performed on the block
+ * @returns 
+ */
 export const deleteBlock = async (block, action) => {
   const token = await getNettsperreToken()
   try {
@@ -164,6 +189,43 @@ export const deleteBlock = async (block, action) => {
     if(response.status !== 200) {
       return { error: response.data }
     }
+    return response
+  } catch (error) {
+    return error
+  }
+}
+/**
+ * 
+ * @param {String} requestor | The UPN of the user requesting permission
+ * @param {String} teacher | The UPN of the teacher to be edited
+ * @returns 
+ */
+export const validatePermission = async (requestor, teacher) => {
+  // Check if the requestor and teacher is provided
+  if(!requestor || !teacher) return { error: 'No requestor or teacher provided' }
+  const token = await getNettsperreToken()
+  try {
+    const response = await axios.post(import.meta.env.VITE_NETTSPERRE_API_URL + '/validatePermission', { requestorUPN: requestor, teacherToBeEditedUPN: teacher }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response
+  } catch (error) {
+    return error
+  }
+}
+
+export const getExtendedUserInfo = async (upn) => {
+  // Check if the upn is provided
+  if(!upn) return { error: 'No upn provided' }
+  const token = await getNettsperreToken()
+  try {
+    const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/extendedUserInfo/${upn}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     return response
   } catch (error) {
     return error
