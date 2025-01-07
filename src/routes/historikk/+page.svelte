@@ -343,5 +343,7 @@
     .infoText {
         padding: 0.5rem; 
         margin: 1rem;
+        background-color: var(--vann-10);
+        font-size: 1.1rem;
     }
 </style>
