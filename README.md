@@ -1,17 +1,16 @@
 ## Notes
 ### Nettsperre
-Funksjoner som må på plass i v1.0
-1. Opprette sperring på undervisningsgruppe eller enkelt elever frem i tid.
 
-Grupper: (De som er kommentert ut skal vi vente med)
-NETTSPERRE-EKSAMEN-MAN
+
+Grupper:
+1. NETTSPERRE-EKSAMEN-MAN
 <!-- NETTSPERRE-PROVE-MAN -->
 <!-- NETTSPERRE-TEAMS-MAN  -->
-NETTSPERRE-OFFLINE-MAN
+<!-- NETTSPERRE-OFFLINE-MAN -->
 
 ### Database
 Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
-Historie - inneholder alle sperringer som er utgått
+Historie - inneholder alle sperringer som er utgått/slettet
 
 # Nettsperre
 En Webapp med sveltekit. 
@@ -21,7 +20,7 @@ De ulike sperrene:
 1. Prøve. (TBA)
 2. Kun tilgang til teams. (TBA)
 3. Eksamen.
-4. Offline (Ingen tilgang til internett eller andre løsninger).
+4. Offline (TBA).
 
 ## Deploye løsningen 
 TODO :)
@@ -34,10 +33,9 @@ TODO :)
 
 ## Roller
 Kort beskrivelse av de ulike rollene, hva de kan gjøre og generelt hvem som har tilgang til rollene. 
-
-1. Lærer (app.laerer) - default access til appilkasjonen. Læreren har lov til å sette sperre på elevene i sin(e) undervisningsgrupper
-2. Superbruker (app.super) - Ledere/Administrasjon/Servicedesk, lov til å sette sperre på elever/undervinsinsgrupper innad på skolen. 
-3. Admin (app.admin) - Utviklere, gi mulighet til å logge inn som lærer for å se hvordan ting ser ut for den personen. Logges i mongoDB hvem som har vært inne og og hva som har blitt gjort.
+1. Lærer - default access til appilkasjonen. Læreren har lov til å sette sperre på elevene i sin(e) undervisningsgrupper
+2. Superbruker - Ledere/Administrasjon/Servicedesk, lov til å sette sperre på elever/undervinsinsgrupper innad på skolen og på vegne av en lærer. 
+3. Admin - Utviklere. Se logger og detaljer i løsningen.
 
 ## Usecases
 Generell beskrivelse av noen usecaser
