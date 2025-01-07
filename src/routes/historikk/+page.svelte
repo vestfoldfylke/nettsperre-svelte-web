@@ -5,7 +5,8 @@
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
     import { getNettsperreToken, getHistory, getGroupMembers } from "../../lib/useApi.js";
     import { prettyPrintDate } from "../../lib/helpers/pretty-date"
-    import { schoolInfo } from "../../lib/helpers/tfk-schools"
+    import { schoolInfoTFK } from "../../lib/helpers/tfk-schools"
+    import { schoolInfoVFK } from "../../lib/helpers/vfk-schools"
     import { syntaxHighlight } from "../../lib/helpers/highlight-json" 
     import Searchfield from "../../lib/components/Searchfield.svelte"
 
@@ -14,6 +15,7 @@
     let hideMonthBlock = []
     let history = []
     let groupMembersArray
+    let schoolInfo = import.meta.env.VITE_COUNTY === 'Telemark' ? schoolInfoTFK : schoolInfoVFK
     
     let filterObj = {
         teacher: undefined,
@@ -343,5 +345,7 @@
     .infoText {
         padding: 0.5rem; 
         margin: 1rem;
+        background-color: var(--vann-10);
+        font-size: 1.1rem;
     }
 </style>
