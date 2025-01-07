@@ -71,11 +71,11 @@
       href: '/sperringer',
       icon: 'gpp_bad'
     },
-    // {
-    //   title: 'Historikk',
-    //   href: '/historikk',
-    //   icon: 'history'
-    // },
+    {
+      title: 'Historikk',
+      href: '/historikk',
+      icon: 'history'
+    },
     {
       title: 'Hjelp',
       href: '/hjelp',
@@ -210,7 +210,7 @@
     align-items: center;
     padding: 1.5rem 0rem;
     display: flex;
-    height: 100vh;
+    height: 100%;
     background-color: var(--vann-30);
   }
   .sidebar {
