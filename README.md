@@ -7,11 +7,11 @@ Grupper: (De som er kommentert ut skal vi vente med)
 NETTSPERRE-EKSAMEN-MAN
 <!-- NETTSPERRE-PROVE-MAN -->
 <!-- NETTSPERRE-TEAMS-MAN  -->
-NETTSPERRE-OFFLINE-MAN
+<!-- NETTSPERRE-OFFLINE-MAN -->
 
 ### Database
 Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
-Historie - inneholder alle sperringer som er utgått
+Historie - inneholder alle sperringer som er utgått/slettet
 
 # Nettsperre
 En Webapp med sveltekit. 
