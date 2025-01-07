@@ -1,4 +1,4 @@
-export const schoolInfo = [
+export const schoolInfoVFK = [
     {
         officeLocation: 'Holmestrand videregående skole', // Officelocation som kommer og matcher fra AD (graph)
         primaryLocation: 'Holmestrand videregående skole', 
