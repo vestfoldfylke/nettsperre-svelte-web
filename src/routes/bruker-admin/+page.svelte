@@ -2,7 +2,7 @@
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
     import { getNettsperreToken, getGroupMembers, validatePermission } from "../../lib/useApi.js";
     import { onMount } from "svelte";
-    import { superUserImposter } from "../../lib/store"
+    import { superUserImposter, teachersStore } from "../../lib/store"
     import { get } from "svelte/store";
     import { goto } from '$app/navigation'
 
@@ -29,8 +29,13 @@
 
     const getTeachers = async () => {
         try {
-            const teachers = await getGroupMembers()
-            groupMembersArray = teachers.data
+            if(get(teachersStore).length === 0) {
+                const teachers = await getGroupMembers()
+                groupMembersArray = teachers.data
+                teachersStore.set(groupMembersArray)
+            } else {
+                groupMembersArray = get(teachersStore)
+            }
         } catch (error) {
             console.error(error)
         }
