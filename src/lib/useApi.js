@@ -231,3 +231,37 @@ export const getExtendedUserInfo = async (upn) => {
     return error
   }
 }
+
+
+/**
+ * Retrieves history based on teacher, course, and school parameters.
+ * At least one parameter must be provided; otherwise, an error is returned.
+ *
+ * @async
+ * @function getHistory
+ * @param {string} [teacher] - The teacher's identifier. Example: 'teacher@county.no'.
+ * @param {string} [course] - The course's identifier. Example: 'POV-MAT101-Klasse'.
+ * @param {string} [school] - The school's identifier. Example: Porsgrunn videregående skole.
+ * @returns {Promise<Object>} The response from the API or an error object.
+ */
+export const getHistory = async (teacher, course, school) => {
+  const token = await getNettsperreToken()
+  // Check if any of the parameters are provided
+  if(!teacher && !course && !school) return { error: 'No parameters provided' }
+
+  let query = ''
+  // Build the query string
+  teacher ? query += `${teacher}/` : query += 'null/'
+  course ? query += `${course}/` : query += 'null/'
+  school ? query += `${school}` : query += 'null'
+  try {
+    const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/history/${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    return response
+  } catch (error) {
+    return error
+  }
+}
