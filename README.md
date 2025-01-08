@@ -9,27 +9,57 @@ Grupper:
 <!-- NETTSPERRE-OFFLINE-MAN -->
 
 ### Database
-Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
-Historie - inneholder alle sperringer som er utgått/slettet
+En mongoDB database, se intern docs for detaljer.
+#### Collections
+    Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
+
+    Historie - inneholder alle sperringer som er utgått/slettet
 
 # Nettsperre
-En Webapp med sveltekit. 
+En Webapp med sveltekit som er hostet i vercel.
 Løsningen gir lærere og andre superbrukere mulighet til å sperre undervisningsgrupper og enkelt elever fra ulike løsninger og internett. 
 
 De ulike sperrene: 
 1. Prøve. (TBA)
 2. Kun tilgang til teams. (TBA)
 3. Eksamen.
-4. Offline (TBA).
+4. Offline. (TBA)
 
 ## Deploye løsningen 
-TODO :)
-## Beskrivelse av løsningen 
-TODO :)
-## Frontend
-TODO :)
+### Requirements
+Se intern docs for detaljer. 
+
+1. Azure app registrering for autentisering
+2. [azf-nettsperre](https://github.com/telemarkfylke/azf-nettsperre)
+### App settings
+Opprett en .env fil
+| Key                             | Value                                                                 | Beskrivelse                                                                 |
+|---------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| VITE_CLIENT_ID                  |                                  | Klient-ID for applikasjonen                                                 |
+| VITE_TENANT_ID                  |                                   | Tenant-ID for Azure AD                                                   |
+| VITE_CLIENT_ISS                 | | Utsteder-URL for Azure AD                                                   |
+| VITE_REDIRECT_URI               | http://localhost:5173                                                 | Omdirigerings-URI                                       |
+| VITE_DEFAULT_SCOPE              |        | Standard scope for API-tilgang                                              |
+| VITE_RETURN_ONLY_STUDENTS       | true/false                                                                  | Returner kun studenter (i test kan dette settes til false for å teste andre brukere) |
+| VITE_NETTSPERRE_API_URL         | http://localhost:7071/api                                             | URL til API for nettsperre                                                  |
+| VITE_MOCK_MSAL                  |  true/false                                                                 | Bruk mock MSAL (false for ekte MSAL)                                        |
+| VITE_COUNTY                     | Telemark                                                              | Fylke                                                                      |
+| VITE_DISABLE_EKSAMEN            |  true/false                                                                 | Deaktiver eksamenssperre                                                    |
+| VITE_DISABLE_FULLBLOCK          |  true/false                                                                 | Deaktiver full blokkering                                                   |
+| VITE_DISABLE_PROVE              |  true/false                                                                  | Deaktiver prøvesperre                                                       |
+| VITE_SUPERUSER_ROLE             |                                                                   | Rolle for superbruker                                                       |
+| VITE_SEARCH_GROUP               |                                   | Gruppe-ID for søk                                                           |
+### Local Development
+```bash
+## Installer dependencies
+npm i
+
+## Start prosjektet 
+npm run dev
+```
 ## Backend
-TODO :)
+Backenden er bygget i azure functions, du kan lese mer om den her: [azf-nettsperre](https://github.com/telemarkfylke/azf-nettsperre)
+
 
 ## Roller
 Kort beskrivelse av de ulike rollene, hva de kan gjøre og generelt hvem som har tilgang til rollene. 
@@ -44,13 +74,13 @@ Generell beskrivelse av noen usecaser
 1. Lærer søker opp undervisningsgruppen som eleven er medlem av.
 2. Velger bort alle elevene og velger kun den/de elevene som skal sperres. 
 3. Velger hvilke sperringer som skal settes.
-4. Velger ikke å sette et tidspunkt, sperringen vil skje med engang. 
+4. Velger ikke å sette et tidspunkt, sperringen vil skje med en gang. 
 5. Sjekker at alt ser bra ut og sender sperringen. 
 #### Sperre en undervisningsgruppe
 1. Lærer søker opp undervisningsgruppen.
 2. Alle elevene er automatisk valgt. 
 3. Velger hvilke sperringer som skal settes.
-4. Velger ikke å sette et tidspunkt, sperringen vil skje med engang. 
+4. Velger ikke å sette et tidspunkt, sperringen vil skje med en gang. 
 5. Sjekker at alt ser bra ut og sender sperringen. 
 #### Sperre en enkelt elev/undervisningsgruppe frem i tid
 1. Lærer søker opp undervisningsgruppen.
