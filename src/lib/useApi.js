@@ -141,10 +141,10 @@ export const putBlock = async (block) => {
  * @param {String} status | Comma separated string of statuses
  * @param {String} upn | The upn of the user to get blocks for
  */
-export const getBlocks = async (status, upn) => {
+export const getBlocks = async (status, upn, school) => {
   const token = await getNettsperreToken()
-  // Check if the upn is provided
-  if(!upn) return { error: 'No upn provided' }
+  // Check if the upn or school is provided
+  if(upn === null && school === null) return { error: 'Missing valid param, must provide atleast one' }
 
   const validStatus = ['pending', 'active', 'expired']
   // Check if the status is a comma separated list
@@ -164,7 +164,7 @@ export const getBlocks = async (status, upn) => {
     }
   }
   
-  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getBlocks/${status}/${upn}`, {
+  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getBlocks/${status}/${upn}/${school}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -216,6 +216,12 @@ export const validatePermission = async (requestor, teacher) => {
   }
 }
 
+/**
+ * Fetches extended user information based on the provided UPN (User Principal Name).
+ *
+ * @param {string} upn - The User Principal Name to fetch information for.
+ * @returns {Promise<Object>} - A promise that resolves to the extended user information or an error object.
+ */
 export const getExtendedUserInfo = async (upn) => {
   // Check if the upn is provided
   if(!upn) return { error: 'No upn provided' }
