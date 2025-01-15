@@ -50,21 +50,31 @@
 	}
 
     const setAdmin = async (requestor, teacher) => {
+        processing = true
         const permission = await validatePermission(requestor, teacher.userPrincipalName)
         if(permission.status === 200) {
             superUserImposter.set({
                 requestor: requestor,
                 teacher: teacher
             })
+            processing = false
             goto('/')
             return true
         } else {
-            return false
+            processing = false
+            error = true
+            errorMsg = {
+                status: permission.status,
+                message: permission.message,
+                customMessage: 'Du har ikke tilgang til å administrere denne brukeren'
+            }
         }
     }
 
     const resetImposter = () => {
+        processing = true
         superUserImposter.set([])
+        processing = false
         goto('/')
     }
 
@@ -77,8 +87,18 @@
     </div>
     {:else}
         {#if error}
-            <div>
-                <p>Noe gikk galt om du havner her </p>
+            <div class="center">
+                <h2>Oi! Noe gikk galt❗</h2>
+            </div>
+            <div class="center">
+                <div class="errorMsg">
+                    <p>Status: {errorMsg.status}</p>
+                    <p>Melding: {errorMsg.message}</p>
+                    <p>{errorMsg.customMessage}</p>
+                </div>
+            </div>
+            <div class="center">
+                <button on:click={ () => goto('/')}>Tilbake</button>
             </div>
         {:else}
             {#await getNettsperreToken(true)}
@@ -203,6 +223,14 @@
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .center .errorMsg {
+        text-align: center;
+        background-color: var(--nype-60);
+        padding: 1rem;
+        font-size: 1.2rem;
     }
 
     .icon-input input {

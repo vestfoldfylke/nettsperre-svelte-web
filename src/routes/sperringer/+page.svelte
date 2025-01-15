@@ -1,19 +1,23 @@
 <script>
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import { getNettsperreToken, getBlocks, getStudents, putBlock, deleteBlock } from "../../lib/useApi.js";
+    import Modal from "../../lib/components/Modal.svelte";
+    import { getNettsperreToken, getBlocks, getStudents, putBlock, deleteBlock, getExtendedUserInfo } from "../../lib/useApi.js";
     import { onMount } from "svelte";
     import { prettyPrintDate } from "../../lib/helpers/pretty-date"
     import { prettyPrintBlock } from "../../lib/helpers/pretty-block-type"
     import { superUserImposter } from "../../lib/store"
+    import { prettyPrintStatus } from "../../lib/helpers/pretty-status"
     import { get } from "svelte/store";
     import { goto } from '$app/navigation'
 
     let token
     let showActive = false
     let showPending = false
+    let showSchool = false
     let showDetails = []
     let blockedStudents = []
     let allStudents = []
+    let studentsToShow = []
     $: detailsData = null
     $: blockResponse = null
     $: showDetailsState = false
@@ -21,6 +25,7 @@
     $: editBlockDate = false
     $: editBlockStudents = false
     $: processing = false
+    $: showModal = false
     $: isDeleteBlock = false
     $: imposting = ''
     
@@ -29,8 +34,8 @@
         imposting = get(superUserImposter)
     })
 
-    const getBlocksData = async (status, upn) => {
-        const blocks = await getBlocks(status, upn)
+    const getBlocksData = async (status, upn, school) => {
+        const blocks = await getBlocks(status, upn, school)
         return blocks
     }
 
@@ -40,6 +45,10 @@
 
     const showPendingBlocks = () => {
         showPending = !showPending
+    }
+
+    const showSchoolBlocks = () => {
+        showSchool = !showSchool
     }
 
     const showDetailsDiv = (i, block) => {
@@ -201,6 +210,7 @@
         editBlockStudents = false
         showActive = false
         showPending = false
+        showSchool = false
         showDetails = []
         blockedStudents = []
         allStudents = []
@@ -211,6 +221,20 @@
             () => goto(thisPage)
         );
     }
+    // Sort by date, and show only the blocks that are 7 days ahead of today.
+    const sortByDate = (blocks) => {
+        const today = new Date()
+        const sevenDaysAhead = new Date(today.setDate(today.getDate() + 7))
+        return blocks.filter(block => new Date(block.startBlock) < sevenDaysAhead)
+    }
+
+    const showStudents = (i, block) => {
+        // Disable scrolling when modal is open
+        document.body.style.overflow = "hidden"
+        document.body.style.height = "100%"
+        showModal = true
+        studentsToShow = block.students
+    }
 
 </script>
 
@@ -220,6 +244,19 @@
             <IconSpinner/>
         </div>
     {:else}
+        <Modal bind:showModal>
+            <div slot="header">
+                <h1>Elever i klassen</h1>
+            </div>
+            <div class="grid">
+                {#each studentsToShow as students }
+                    <div class="students">
+                        <span class="material-symbols-outlined">person</span>
+                        {students.displayName}
+                    </div>
+                {/each}   
+            </div>     
+        </Modal>
         {#if blockResponse?.status !== 200 && blockResponse !== null}
             <div class="dbResponse">
                 <h1>Noe gikk galt</h1>
@@ -296,7 +333,7 @@
                     <IconSpinner/>
                 </div>
             {:then token}
-                {#await getBlocksData('active,pending', imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn)}
+                {#await getBlocksData('active,pending', imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn, null)}
                     <div class="center">
                         <IconSpinner/>
                     </div>
@@ -391,14 +428,16 @@
                         </div>
                     {:else}
                         {#if blocks.status === 200}
-                        {#if get(superUserImposter).length !== 0}
-                            <h3 style="color: red;">Du er logget inn som: {imposting.teacher.userPrincipalName}</h3>
-                        {/if}
-                        <div class="pageHeader">
-                            <h1>Dine aktive sperringer</h1>
-                            <button on:click={ () => showActiveBlocks()}>{showActive ? 'Skjul aktive sperringer' : 'Se aktive sperringer'}</button>
-                        </div>
+                            {#if get(superUserImposter).length !== 0}
+                                <h3 style="color: red;">Du er logget inn som: {imposting.teacher.userPrincipalName}</h3>
+                            {/if}
+                            <div class="pageHeader">
+                                <h1>Dine aktive sperringer</h1>
+                                <button on:click={ () => showActiveBlocks()}>{showActive ? 'Skjul aktive sperringer' : 'Se aktive sperringer'}</button>
+                            </div>
                             {#if showActive}
+                            <!-- Check if any status in blocks array === active  -->
+                            {#if blocks.data.some(block => block.status === 'active')}
                                 {#each blocks.data as block, i}
                                     {#if block.status === 'active'}
                                         <div class="blockRow header">
@@ -428,50 +467,134 @@
                                         </div>
                                     {/if}
                                 {/each}
+                                {:else}
+                                    <p style="color: red;">❗Ingen aktive sperringer funnet❗</p>
                             {/if}
-                        <hr>
-                        <br>
-                        <div class="pageHeader">
-                            <h1>Dine fremtidige sperringer</h1>
-                            <button on:click={ () => showPendingBlocks()}>{showPending ? 'Skjul fremtidige sperringene' : 'Se fremtidige sperringene'}</button>
-                        </div>
-                            {#if showPending}
-                                {#each blocks.data as block, i}
-                                    {#if block.status === 'pending'}
-                                        <div class="blockRow header">
-                                            <div class="blockEditInfo">
-                                                <h3>Klasse</h3>
-                                                {block.blockedGroup.displayName}
-                                            </div>
-                                            <div class="blockEditInfo">
-                                                <h3>Antall elever</h3>
-                                                {block.students.length}
-                                            </div>
-                                            <div class="blockEditInfo">
-                                                <h3>Fra</h3>
-                                                {prettyPrintDate(block.startBlock)}
-                                            </div>
-                                            <div class="blockEditInfo">
-                                                <h3>Til</h3>
-                                                {prettyPrintDate(block.endBlock)}
-                                            </div>
-                                            <div class="actionDiv">
-                                                <h3>Handlinger</h3>
-                                                <div class="classAction">
-                                                    <button on:click={ () => showDetailsDiv(i, block)}>Se detaljer/rediger</button>
-                                                    <button on:click={ () => postDeleteBlock(i, block, 'delete')}>Slett sperring</button>
-                                                </div>
+                            {/if}
+                            <hr>
+                            <br>
+                            <div class="pageHeader">
+                                <h1>Dine fremtidige sperringer</h1>
+                                <button on:click={ () => showPendingBlocks()}>{showPending ? 'Skjul fremtidige sperringer' : 'Se fremtidige sperringer'}</button>
+                            </div>
+                        {#if showPending}
+                        {#if blocks.data.some(block => block.status === 'pending')}
+                            {#each blocks.data as block, i}
+                                {#if block.status === 'pending'}
+                                    <div class="blockRow header">
+                                        <div class="blockEditInfo">
+                                            <h3>Klasse</h3>
+                                            {block.blockedGroup.displayName}
+                                        </div>
+                                        <div class="blockEditInfo">
+                                            <h3>Antall elever</h3>
+                                            {block.students.length}
+                                        </div>
+                                        <div class="blockEditInfo">
+                                            <h3>Fra</h3>
+                                            {prettyPrintDate(block.startBlock)}
+                                        </div>
+                                        <div class="blockEditInfo">
+                                            <h3>Til</h3>
+                                            {prettyPrintDate(block.endBlock)}
+                                        </div>
+                                        <div class="actionDiv">
+                                            <h3>Handlinger</h3>
+                                            <div class="classAction">
+                                                <button on:click={ () => showDetailsDiv(i, block)}>Se detaljer/rediger</button>
+                                                <button on:click={ () => postDeleteBlock(i, block, 'delete')}>Slett sperring</button>
                                             </div>
                                         </div>
-                                    {/if}
-                                    <hr>
-                                {/each}
+                                    </div>
+                                {/if}
+                                <hr>
+                            {/each}
+                            {:else}
+                                <p style="color: red;">❗Ingen fremtidige sperringer funnet❗</p>
                             {/if}
-                        {:else}
-                            <p>Noe gikk galt</p>
                         {/if}
+                    {:else}
+                        <p>Noe gikk galt</p>
+                    {/if}
                     {/if}
                 {/await}
+                {#await getExtendedUserInfo(imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn)}
+                    <div class="center">
+                        <IconSpinner/>
+                    </div>
+                {:then userInfo} 
+                    {#await getBlocksData('active,pending', null, userInfo.data.officeLocation)}
+                        <div class="center">
+                            <IconSpinner/>
+                        </div>
+                    {:then blocks}
+                        <hr>
+                        <br>
+                        {#if showDetailsState === false}
+                            <div class="pageHeader">
+                                <h1>Skolens sperringer</h1>
+                                <button on:click={ () => showSchoolBlocks()}>{showSchool ? 'Skjul skolens sperringer' : 'Se skolens sperringer'}</button>
+                            </div>
+                            {#if showSchool}
+                                {#if blocks.data.some(block => ['pending', 'active'].includes(block.status))}
+                                    {#each sortByDate(blocks.data) as block, i}
+                                        {#if ['pending', 'active'].includes(block.status)}
+                                            <div class="blockRow header">
+                                                <div class="blockEditInfo">
+                                                    <div class="schoolDataGrid">
+                                                        <div class="blockEditInfo"> 
+                                                            <h3>Klasse</h3>
+                                                            {block.blockedGroup.displayName}
+                                                        </div>
+                                                        <div class="blockEditInfo">
+                                                            <h3>Lærer</h3>
+                                                            {block.teacher.displayName}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="blockEditInfo">
+                                                    <div class="schoolDataGrid">
+                                                        <div class="blockEditInfo">
+                                                            <h3>Antall elever</h3>
+                                                            {block.students.length}
+                                                        </div>
+                                                        <div class="blockEditInfo">
+                                                            <h3>Handling</h3>
+                                                            <button on:click={ () => showStudents(i, block)}>Se Elever</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="blockEditInfo">
+                                                    <div class="schoolDataGrid">
+                                                        <div class="blockEditInfo">
+                                                            <h3>Fra</h3>
+                                                            {prettyPrintDate(block.startBlock)}
+                                                        </div>
+                                                        <div class="blockEditInfo">
+                                                            <h3>Til</h3>
+                                                            {prettyPrintDate(block.endBlock)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="blockEditInfo">
+                                                
+                                                </div>
+                                                <div class="blockEditInfo">
+                                                    <h3>Status</h3>
+                                                    {prettyPrintStatus(block.status)}
+                                                </div>
+                                            </div>
+                                        {/if}
+                                        <hr>
+                                    {/each}
+                                {:else}
+                                    <p style="color: red;">❗Ingen sperringer for {userInfo.data.officeLocation} funnet❗</p>
+                                {/if}
+                            {/if}
+                            <hr>
+                        {/if}
+                    {/await}
+                {/await}        
             {/await}
         {/if}
     {/if}
@@ -490,6 +613,26 @@
         flex-direction: column;
 		gap: 0.5rem;
 	}
+    .grid {
+		display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+	}
+    .schoolDataGrid {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: space-around;
+        align-items: flex-start;
+    }
+    .students {
+        display: flex;
+        flex-direction: row;
+        padding: 0.2rem;
+        gap: 0.5rem;
+    }
 	.blockRow.header {
 		padding: 1rem 2rem 0rem 2rem;
 	}
