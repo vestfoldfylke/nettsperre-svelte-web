@@ -200,12 +200,13 @@ export const deleteBlock = async (block, action) => {
  * @param {String} teacher | The UPN of the teacher to be edited
  * @returns 
  */
-export const validatePermission = async (requestor, teacher) => {
+export const validatePermission = async (requestor, teacher, sessionId) => {
   // Check if the requestor and teacher is provided
   if(!requestor || !teacher) return { error: 'No requestor or teacher provided' }
+  if(!sessionId) return { error: 'No sessionId provided' }
   const token = await getNettsperreToken()
   try {
-    const response = await axios.post(import.meta.env.VITE_NETTSPERRE_API_URL + '/validatePermission', { requestorUPN: requestor, teacherToBeEditedUPN: teacher }, {
+    const response = await axios.post(import.meta.env.VITE_NETTSPERRE_API_URL + '/validatePermission', { requestorUPN: requestor, teacherToBeEditedUPN: teacher, sessionId: sessionId }, {
       headers: {
         Authorization: `Bearer ${token}`
       }

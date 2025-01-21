@@ -2,7 +2,7 @@
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
     import { getNettsperreToken, getGroupMembers, validatePermission } from "../../lib/useApi.js";
     import { onMount } from "svelte";
-    import { superUserImposter, teachersStore } from "../../lib/store"
+    import { superUserImposter, teachersStore, superUserImposterSessionID } from "../../lib/store"
     import { get } from "svelte/store";
     import { goto } from '$app/navigation'
 
@@ -49,9 +49,21 @@
 		teachers = groupMembersArray.filter(filterFunc)
 	}
 
+    const generateGUID = () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            // Replace x or y with random hex digit
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            // Return the random guid like string
+            return v.toString(16);
+        });
+    }
+
     const setAdmin = async (requestor, teacher) => {
         processing = true
-        const permission = await validatePermission(requestor, teacher.userPrincipalName)
+        // Create a random session id (guid) for the user
+        const sessionId = generateGUID()
+        superUserImposterSessionID.set(sessionId)
+        const permission = await validatePermission(requestor, teacher.userPrincipalName, sessionId)
         if(permission.status === 200) {
             superUserImposter.set({
                 requestor: requestor,
