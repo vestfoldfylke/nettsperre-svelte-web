@@ -144,7 +144,6 @@
                                 <h1>Hei, {token.name}!</h1>
                                 {#if get(superUserImposter).length !== 0}
                                     <h3 style="color: red;">Du er logget inn som: {get(superUserImposter).teacher.userPrincipalName}</h3>
-                                    <h3 style="color: red;">SessionId: {get(superUserImposterSessionID)}</h3>
                                     <button on:click={() => resetImposter()}>Fjern administrering</button>
                                 {/if}   
                             </div>
