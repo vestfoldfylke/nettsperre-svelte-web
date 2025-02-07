@@ -198,6 +198,7 @@ export const deleteBlock = async (block, action) => {
  * 
  * @param {String} requestor | The UPN of the user requesting permission
  * @param {String} teacher | The UPN of the teacher to be edited
+ * @param {String} sessionId | The sessionId of the impersonation
  * @returns 
  */
 export const validatePermission = async (requestor, teacher, sessionId) => {

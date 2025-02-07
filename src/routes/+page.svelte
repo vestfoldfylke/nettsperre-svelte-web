@@ -111,6 +111,10 @@
             blockObject.typeBlock.type = 'eksamen'
         } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'fullBlock') {
             blockObject.typeBlock.type = 'fullBlock'
+        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'formsFile') {
+            blockObject.typeBlock.type = 'formsFile'
+        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'forms') {
+            blockObject.typeBlock.type = 'forms'
         }
         blockObject.startBlock = document.getElementById('startTime')?.value
         blockObject.endBlock = document.getElementById('endTime')?.value
@@ -299,6 +303,14 @@
                             {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
                                 <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
                                 <label for="radio3" value="">Ingen internett tilgang</label>
+                            {/if}
+                            {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
+                                <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
+                                <label for="radio4" value="">Forms uten filopplastning og eksamenshjelpemidler</label>
+                            {/if}
+                            {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
+                                <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
+                                <label for="radio5" value="">Forms med filopplastning</label>
                             {/if}
                         </div>
                         <h3>Velg tidspunkt for sperringen.</h3>
