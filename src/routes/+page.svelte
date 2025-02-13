@@ -294,23 +294,30 @@
                         <h3>Velg den sperremodusen du ønsker å bruke.</h3>
                         <div class="blockSelection">
                             {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
-                                <label for="radio1" value="">Eksamensperre</label>
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
+                                    <label for="radio1" value="">Eksamen med eksamenshjelpemidler</label>
+                                </div>
                             {/if}
-
                             <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
                             <label for="radio2" value="">Prøvemodus</label> -->
-                            {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
-                                <label for="radio3" value="">Ingen internett tilgang</label>
+                            {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}    
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
+                                    <label for="radio3" value="">Ingen internett tilgang</label>
+                                </div>
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
-                                <label for="radio4" value="">Forms uten filopplastning og eksamenshjelpemidler</label>
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
+                                    <label for="radio4" value="">Prøve i Forms uten filopplastning og uten eksamenshjelpemidler</label>
+                                </div>
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
-                                <label for="radio5" value="">Forms med filopplastning</label>
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
+                                    <label for="radio5" value="">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
+                                </div>
                             {/if}
                         </div>
                         <h3>Velg tidspunkt for sperringen.</h3>
@@ -385,7 +392,8 @@
     }
     .blockSelection {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        flex-wrap: wrap;
         padding: 1rem;
         gap: 0.5rem;
     }

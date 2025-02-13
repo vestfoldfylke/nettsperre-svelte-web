@@ -387,24 +387,32 @@
                                 {/if}
                                 <div class="blockSelection">
                                     {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
-                                        <input type="radio"  id="radio1" name="radioGroup" value="Eksamensmodus" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
-                                        <label for="radio1" value="">Eksamensperre</label>
+                                        <div>
+                                            <input type="radio"  id="radio1" name="radioGroup" value="Eksamensmodus" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
+                                            <label for="radio1" value="">Eksamen med eksamenshjelpemidler</label>
+                                        </div>
                                     {/if}
 
                                     <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
                                     <label for="radio2" value="">Prøvemodus</label> -->
 
                                     {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
-                                        <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
-                                        <label for="radio3" value="">Ingen internett tilgang</label>
+                                        <div>
+                                            <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
+                                            <label for="radio3" value="">Ingen internett tilgang</label>
+                                        </div>
                                     {/if}
                                     {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
-                                        <input type="radio" id="radio4" name="radioGroup" value="forms" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'forms' ? true : ''}>
-                                        <label for="radio4" value="">Forms uten filopplastning og eksamenshjelpemidler</label>
+                                        <div>
+                                            <input type="radio" id="radio4" name="radioGroup" value="forms" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'forms' ? true : ''}>
+                                            <label for="radio4" value="">Prøve i Forms uten filopplastning og uten eksamenshjelpemidler</label>
+                                        </div>
                                     {/if}
                                     {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
-                                        <input type="radio" id="radio5" name="radioGroup" value="formsFile" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'formsFile' ? true : ''}>
-                                        <label for="radio5" value="">Forms med filopplastning</label>
+                                        <div>
+                                            <input type="radio" id="radio5" name="radioGroup" value="formsFile" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'formsFile' ? true : ''}>
+                                            <label for="radio5" value="">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
+                                        </div>
                                     {/if}
                                 </div>
                                 {#if detailsData.status === 'pending'}
@@ -783,7 +791,8 @@
 
     .blockSelection {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        flex-wrap: wrap;
         padding: 1rem;
         gap: 0.5rem;
     }
