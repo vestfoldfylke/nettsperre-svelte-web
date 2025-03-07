@@ -319,6 +319,13 @@
                                     <label for="radio5" value="">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
                                 </div>
                             {/if}
+                            <div>
+
+                            </div>
+                            <p class="infoText"> {@html import.meta.env.VITE_INFOBOX_TEXT} </p>
+                            <div class="alert">
+                                <p>Husk at elevene må starte maskinen på nytt for at sperring skal virke, og når de skal ut av sperring.</p>
+                            </div>
                         </div>
                         <h3>Velg tidspunkt for sperringen.</h3>
                         <div class="dateTimePicker">
@@ -515,5 +522,20 @@
         gap: 1rem;
         padding: 1rem;
         background-color: var(--gress-60);
+    }
+
+    .alert {
+        border: 1px solid var(--nype);
+        border-radius: 5px;
+        padding: 1rem;
+        background-color: var(--nype-20);
+        font-weight: bold;
+    }
+    .infoText {
+        border: 1px solid var(--vann);
+        border-radius: 5px;
+        padding: 1rem;
+        background-color: var(--vann-10);
+        border-radius: 5px;
     }
 </style>
