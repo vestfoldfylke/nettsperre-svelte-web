@@ -310,13 +310,13 @@
                             {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
-                                    <label for="radio4" value="">Prøve i Forms uten filopplastning og uten eksamenshjelpemidler</label>
+                                    <label for="radio4" value="">{import.meta.env.VITE_FORMS_OPTION_TEXT}</label>
                                 </div>
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
-                                    <label for="radio5" value="">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
+                                    <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
                                 </div>
                             {/if}
                             <div>
