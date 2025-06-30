@@ -111,6 +111,10 @@
             blockObject.typeBlock.type = 'eksamen'
         } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'fullBlock') {
             blockObject.typeBlock.type = 'fullBlock'
+        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'formsFile') {
+            blockObject.typeBlock.type = 'formsFile'
+        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'forms') {
+            blockObject.typeBlock.type = 'forms'
         }
         blockObject.startBlock = document.getElementById('startTime')?.value
         blockObject.endBlock = document.getElementById('endTime')?.value
@@ -290,16 +294,38 @@
                         <h3>Velg den sperremodusen du ønsker å bruke.</h3>
                         <div class="blockSelection">
                             {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
-                                <label for="radio1" value="">Eksamensperre</label>
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
+                                    <label for="radio1" value="">Eksamen med eksamenshjelpemidler</label>
+                                </div>
                             {/if}
-
                             <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
                             <label for="radio2" value="">Prøvemodus</label> -->
-                            {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
-                                <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
-                                <label for="radio3" value="">Ingen internett tilgang</label>
+                            {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}    
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
+                                    <label for="radio3" value="">Ingen internett tilgang</label>
+                                </div>
                             {/if}
+                            {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
+                                    <label for="radio4" value="">{import.meta.env.VITE_FORMS_OPTION_TEXT}</label>
+                                </div>
+                            {/if}
+                            {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
+                                <div>
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
+                                    <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
+                                </div>
+                            {/if}
+                            <div>
+
+                            </div>
+                            <p class="infoText"> {@html import.meta.env.VITE_INFOBOX_TEXT} </p>
+                            <div class="alert">
+                                <p>Husk at elevene må starte maskinen på nytt for at sperring skal virke, og når de skal ut av sperring.</p>
+                            </div>
                         </div>
                         <h3>Velg tidspunkt for sperringen.</h3>
                         <div class="dateTimePicker">
@@ -373,7 +399,8 @@
     }
     .blockSelection {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        flex-wrap: wrap;
         padding: 1rem;
         gap: 0.5rem;
     }
@@ -495,5 +522,20 @@
         gap: 1rem;
         padding: 1rem;
         background-color: var(--gress-60);
+    }
+
+    .alert {
+        border: 1px solid var(--nype);
+        border-radius: 5px;
+        padding: 1rem;
+        background-color: var(--nype-20);
+        font-weight: bold;
+    }
+    .infoText {
+        border: 1px solid var(--vann);
+        border-radius: 5px;
+        padding: 1rem;
+        background-color: var(--vann-10);
+        border-radius: 5px;
     }
 </style>
