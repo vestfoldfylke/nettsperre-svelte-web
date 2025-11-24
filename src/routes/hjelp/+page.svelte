@@ -4,7 +4,7 @@
 
 <main>
     <h1>Velkommen til hjelpesiden</h1>
-        <p>Her finner du informasjon om nettsperre, mer info kommer.</p>
+    <p>Her finner du informasjon om nettsperre, mer info kommer.</p><br />
     <h2>Eksamenssperre</h2>
     <h3>Tilgang til samme godkjente hjelpemidler som på eksamen</h3>
     <br>

@@ -1,17 +1,17 @@
 <script>
-	export let showModal; // boolean
+	export let showModal // boolean
 	export let disableClickOutSide = false // boolean
 	export let disableStandardButton = false // boolean
 
-	let dialog; // HTMLDialogElement
+	let dialog // HTMLDialogElement
 
-	$: if (dialog && showModal) dialog.showModal();
-	
+	$: if (dialog && showModal) dialog.showModal()
+
 	const closeModal = () => {
 		// Endable scrolling when modal is closed
-		document.body.style.height = "auto";
-		document.body.style.overflow = "auto";
-		dialog.close();
+		document.body.style.height = "auto"
+		document.body.style.overflow = "auto"
+		dialog.close()
 	}
 </script>
 

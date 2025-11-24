@@ -1,181 +1,178 @@
 <script>
-  import { onMount } from "svelte";
-  import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "../lib/useApi.js";
-  import IconSpinner from "../lib/components/IconSpinner.svelte";
-  import { prettyPrintDate } from "../lib/helpers/pretty-date"
-  import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
-  import { get } from 'svelte/store'
-  import { superUserImposter } from "../lib/store.js";
-  import { goto } from '$app/navigation'
+	import { onMount } from "svelte"
+	import { get } from "svelte/store"
+	import { goto } from "$app/navigation"
+	import IconSpinner from "../lib/components/IconSpinner.svelte"
+	import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
+	import { prettyPrintDate } from "../lib/helpers/pretty-date"
+	import { superUserImposter } from "../lib/store.js"
+	import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "../lib/useApi.js"
 
-    let showStudents = []
-    let showBlock = []
-    let showStudentsState = []
-    let divAlreadyOpen = []
-    let missingFields = []
-    let token
-    $: processing = false
-    $: blockResponse = null
-    $: isMissingFields = false
-    $: imposting = ''
-    $: requestor = ''
+	let showStudents = []
+	let showBlock = []
+	let showStudentsState = []
+	let divAlreadyOpen = []
+	let missingFields = []
+	let token
+	$: processing = false
+	$: blockResponse = null
+	$: isMissingFields = false
+	$: imposting = ""
+	$: requestor = ""
 
-    onMount( async () => {
-        token = await getNettsperreToken(true)
-        imposting = get(superUserImposter)
-        requestor = await getExtendedUserInfo(token.upn)
-    })
+	onMount(async () => {
+		token = await getNettsperreToken(true)
+		imposting = get(superUserImposter)
+		requestor = await getExtendedUserInfo(token.upn)
+	})
 
-    const myClasses = async (upn) => {
-      return await getClasses(upn)
-    }
+	const myClasses = async (upn) => {
+		return await getClasses(upn)
+	}
 
-    const myStudents = async (classId) => {
-      return await getStudents(classId)
-    }
+	const myStudents = async (classId) => {
+		return await getStudents(classId)
+	}
 
-    const showStudentDiv = (i) => {
-        divAlreadyOpen[i] = !divAlreadyOpen[i]
-        if(divAlreadyOpen && showBlock[i]) {
-            // State for handling div visibility
-            showBlock[i] = !showBlock[i]
-        }
-        // State for handling div visibility
-        showStudents[i] = !showStudents[i]
-        // State for handling button text
-        showStudentsState[i] = !showStudentsState[i]
-    }
+	const showStudentDiv = (i) => {
+		divAlreadyOpen[i] = !divAlreadyOpen[i]
+		if (divAlreadyOpen && showBlock[i]) {
+			// State for handling div visibility
+			showBlock[i] = !showBlock[i]
+		}
+		// State for handling div visibility
+		showStudents[i] = !showStudents[i]
+		// State for handling button text
+		showStudentsState[i] = !showStudentsState[i]
+	}
 
-    const showBlockDiv = (i) => {
-        divAlreadyOpen[i] = !divAlreadyOpen[i]
-        if(divAlreadyOpen && showStudents[i]) {
-            // State for handling div visibility
-            showStudents[i] = !showStudents[i]
-            // State for handling button text
-            showStudentsState[i] = !showStudentsState[i]
-        }
-        // State for handling div visibility
-        showBlock[i] = !showBlock[i]
-    }
+	const showBlockDiv = (i) => {
+		divAlreadyOpen[i] = !divAlreadyOpen[i]
+		if (divAlreadyOpen && showStudents[i]) {
+			// State for handling div visibility
+			showStudents[i] = !showStudents[i]
+			// State for handling button text
+			showStudentsState[i] = !showStudentsState[i]
+		}
+		// State for handling div visibility
+		showBlock[i] = !showBlock[i]
+	}
 
-    const submitBlock = async (classes, i) => {
-        let blockObject = {
-            status: 'pending',
-            students: [],
-            teacher: {
-                teacherId: imposting.length !== 0 ? imposting.teacher.id : token.oid,
-                userPrincipalName: imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn,
-                displayName: imposting.length !== 0 ? imposting.teacher.displayName : token.name,
-                officeLocation: imposting.length !== 0 ? imposting.teacher.officeLocation : requestor.data.officeLocation,
-            },
-            blockedGroup: classes[i],
-            typeBlock: {
-                type: undefined,
-                groupId: 'undefined',
-            },
-            createdBy: {
-                userId: token.oid,
-                userPrincipalName: token.upn,
-                displayName: token.name,
-                officeLocation: requestor.data.officeLocation,
-            },
-            startBlock: undefined, // Timestamp
-            endBlock: undefined, // Timestamp
-            createdTimeStamp: undefined, // Timestamp
-            updated: [
-                // {
-                //     timestamp: 'undefined', // Timestamp
-                //     updatedBy: {
-                //         userId: 'undefined',
-                //         userPrincipalName: 'undefined',
-                //         displayName: 'undefined',
-                //     }
-                // }
-            ]
-        }
-        if(document.querySelectorAll('input[name="selectedStudents"]:checked').length > 0) {
-            document.querySelectorAll('input[name="selectedStudents"]:checked').forEach(e => {
-                blockObject.students.push(JSON.parse(e.value)) 
-            })
-        } else if(showBlock[i]) {
-            // Get the students from the selected class to block then add them to the blockObject.students array
-            const students = await myStudents(classes[i].id)
-            students.data.forEach(student => {
-                blockObject.students.push(student)
-            })
-        }
-        
-        if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'Eksamensmodus') {
-            blockObject.typeBlock.type = 'eksamen'
-        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'fullBlock') {
-            blockObject.typeBlock.type = 'fullBlock'
-        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'formsFile') {
-            blockObject.typeBlock.type = 'formsFile'
-        } else if(document.querySelector('input[name="radioGroup"]:checked')?.value === 'forms') {
-            blockObject.typeBlock.type = 'forms'
-        }
-        blockObject.startBlock = document.getElementById('startTime')?.value
-        blockObject.endBlock = document.getElementById('endTime')?.value
+	const submitBlock = async (classes, i) => {
+		let blockObject = {
+			status: "pending",
+			students: [],
+			teacher: {
+				teacherId: imposting.length !== 0 ? imposting.teacher.id : token.oid,
+				userPrincipalName: imposting.length !== 0 ? imposting.teacher.userPrincipalName : token.upn,
+				displayName: imposting.length !== 0 ? imposting.teacher.displayName : token.name,
+				officeLocation: imposting.length !== 0 ? imposting.teacher.officeLocation : requestor.data.officeLocation
+			},
+			blockedGroup: classes[i],
+			typeBlock: {
+				type: undefined,
+				groupId: "undefined"
+			},
+			createdBy: {
+				userId: token.oid,
+				userPrincipalName: token.upn,
+				displayName: token.name,
+				officeLocation: requestor.data.officeLocation
+			},
+			startBlock: undefined, // Timestamp
+			endBlock: undefined, // Timestamp
+			createdTimeStamp: undefined, // Timestamp
+			updated: [
+				// {
+				//     timestamp: 'undefined', // Timestamp
+				//     updatedBy: {
+				//         userId: 'undefined',
+				//         userPrincipalName: 'undefined',
+				//         displayName: 'undefined',
+				//     }
+				// }
+			]
+		}
+		if (document.querySelectorAll('input[name="selectedStudents"]:checked').length > 0) {
+			document.querySelectorAll('input[name="selectedStudents"]:checked').forEach((e) => {
+				blockObject.students.push(JSON.parse(e.value))
+			})
+		} else if (showBlock[i]) {
+			// Get the students from the selected class to block then add them to the blockObject.students array
+			const students = await myStudents(classes[i].id)
+			students.data.forEach((student) => {
+				blockObject.students.push(student)
+			})
+		}
 
-        // Reset the isMissingFields state
-        isMissingFields = false
-        // Check if all fields are filled out
-        if(blockObject.typeBlock.type === undefined || blockObject.startBlock === '' || blockObject.endBlock === '' || blockObject.students.length <= 0) {
-            isMissingFields = true
-            missingFields = []
-            if(blockObject.students.length <= 0 ) {
-                missingFields.push('Du må velge minst en elev som skal sperres.')
-            }
-            if(blockObject.typeBlock.type === undefined) {
-                missingFields.push('Du må velge en sperremodus.')
-            }
-            if(blockObject.startBlock === '') {
-                missingFields.push('Du må velge et start tidspunkt.')
-            }
-            if(blockObject.endBlock === '') {
-                missingFields.push('Du må velge et slutt tidspunkt.')
-            }
-        }
-        if(isMissingFields === false) {
-            try {
-                processing = true
-                blockObject.createdTimeStamp = new Date().toISOString()
-                blockResponse = await postBlock(blockObject)
-                processing = false
-            } catch (error) {
-                blockResponse = error
-            }
-        }
-    }
+		if (document.querySelector('input[name="radioGroup"]:checked')?.value === "Eksamensmodus") {
+			blockObject.typeBlock.type = "eksamen"
+		} else if (document.querySelector('input[name="radioGroup"]:checked')?.value === "fullBlock") {
+			blockObject.typeBlock.type = "fullBlock"
+		} else if (document.querySelector('input[name="radioGroup"]:checked')?.value === "formsFile") {
+			blockObject.typeBlock.type = "formsFile"
+		} else if (document.querySelector('input[name="radioGroup"]:checked')?.value === "forms") {
+			blockObject.typeBlock.type = "forms"
+		}
+		blockObject.startBlock = document.getElementById("startTime")?.value
+		blockObject.endBlock = document.getElementById("endTime")?.value
 
-    const closeBlock = (i) => {
-        if(divAlreadyOpen && showStudents[i]) {
-            // State for handling div visibility
-            showStudents[i] = !showStudents[i]
-            // State for handling button text
-            showStudentsState[i] = !showStudentsState[i]
-        }
-        if(divAlreadyOpen && showBlock[i]) {
-            // State for handling div visibility
-            showBlock[i] = !showBlock[i]
-        }
-    }
-    const reloadPage = () => {
-        // Reset states
-        blockResponse = null
-        showStudents = []
-        showBlock = []
-        showStudentsState = []
-        divAlreadyOpen = []
-        missingFields = []
+		// Reset the isMissingFields state
+		isMissingFields = false
+		// Check if all fields are filled out
+		if (blockObject.typeBlock.type === undefined || blockObject.startBlock === "" || blockObject.endBlock === "" || blockObject.students.length <= 0) {
+			isMissingFields = true
+			missingFields = []
+			if (blockObject.students.length <= 0) {
+				missingFields.push("Du må velge minst en elev som skal sperres.")
+			}
+			if (blockObject.typeBlock.type === undefined) {
+				missingFields.push("Du må velge en sperremodus.")
+			}
+			if (blockObject.startBlock === "") {
+				missingFields.push("Du må velge et start tidspunkt.")
+			}
+			if (blockObject.endBlock === "") {
+				missingFields.push("Du må velge et slutt tidspunkt.")
+			}
+		}
+		if (isMissingFields === false) {
+			try {
+				processing = true
+				blockObject.createdTimeStamp = new Date().toISOString()
+				blockResponse = await postBlock(blockObject)
+				processing = false
+			} catch (error) {
+				blockResponse = error
+			}
+		}
+	}
 
-        const thisPage = window.location.pathname;
+	const closeBlock = (i) => {
+		if (divAlreadyOpen && showStudents[i]) {
+			// State for handling div visibility
+			showStudents[i] = !showStudents[i]
+			// State for handling button text
+			showStudentsState[i] = !showStudentsState[i]
+		}
+		if (divAlreadyOpen && showBlock[i]) {
+			// State for handling div visibility
+			showBlock[i] = !showBlock[i]
+		}
+	}
+	const reloadPage = () => {
+		// Reset states
+		blockResponse = null
+		showStudents = []
+		showBlock = []
+		showStudentsState = []
+		divAlreadyOpen = []
+		missingFields = []
 
-        goto('/').then(
-            () => goto(thisPage)
-        );
-    }
+		const thisPage = window.location.pathname
 
+		goto("/").then(() => goto(thisPage))
+	}
 </script>
 
 <main>

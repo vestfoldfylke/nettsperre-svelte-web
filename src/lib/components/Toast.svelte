@@ -1,7 +1,7 @@
 <script>
-  export let status = "failed"
-  export let toastTitle = "Suksess 👍"
-  export let toastMessage = "Dokumentet er lagret og lagt til i køen. Sender deg tilbake til elevsiden."
+	export let status = "failed"
+	export let toastTitle = "Suksess 👍"
+	export let toastMessage = "Dokumentet er lagret og lagt til i køen. Sender deg tilbake til elevsiden."
 </script>
 
 <div class="toast {status}">

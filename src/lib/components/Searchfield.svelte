@@ -1,50 +1,49 @@
 <script>
-export let arrayData = []
-export let placeHolder = 'Søk etter...'
-export let propToFilter = ''
-export let selectedObj = ''
+	export let arrayData = []
+	export let placeHolder = "Søk etter..."
+	export let propToFilter = ""
+	export let selectedObj = ""
 
-let highlightedIndex = -1
+	let highlightedIndex = -1
 
-$: inputFieldLength = 0
-$: searchValue = ''
-$: searchResult = ''
-$: selectedSearchValue = ''
+	$: inputFieldLength = 0
+	$: searchValue = ""
+	$: searchResult = ""
+	$: selectedSearchValue = ""
 
-const search = (searchValue) => {
-    inputFieldLength = searchValue.length
-    const filterFunc = (teacher) => {
-        const sv = searchValue.toLowerCase()
-        return (teacher[propToFilter].toLowerCase().startsWith(sv))
-    }
-    searchResult = arrayData.filter(filterFunc)
-}
+	const search = (searchValue) => {
+		inputFieldLength = searchValue.length
+		const filterFunc = (teacher) => {
+			const sv = searchValue.toLowerCase()
+			return teacher[propToFilter].toLowerCase().startsWith(sv)
+		}
+		searchResult = arrayData.filter(filterFunc)
+	}
 
-const handleKeydown = async (searchLength, searchArray, event) => {
-    if (event.key === 'ArrowDown' && (searchArray.length > 0  && searchLength > 0)) {
-        highlightedIndex = (highlightedIndex + 1) % searchArray.length;
-        // Scroll to the highlighted item
-        document.getElementsByClassName('autocomplete-items')[highlightedIndex].scrollIntoView({behavior: 'smooth', block: 'center'})
-    } else if (event.key === 'ArrowUp' && (searchArray.length > 0  && searchLength > 0)) {
-        highlightedIndex = (highlightedIndex - 1 + searchArray.length) % searchArray.length;
-        // Scroll to the highlighted item
-        document.getElementsByClassName('autocomplete-items')[highlightedIndex].scrollIntoView({behavior: 'smooth', block: 'center'});
-    } else if (event.key === 'Enter' && (searchArray.length > 0  && searchLength > 0)) {
-        if (highlightedIndex >= 0 && highlightedIndex < searchArray.length) {
-            selectedSearchResult(searchArray[highlightedIndex]);
-        }
-    }
-}
+	const handleKeydown = async (searchLength, searchArray, event) => {
+		if (event.key === "ArrowDown" && searchArray.length > 0 && searchLength > 0) {
+			highlightedIndex = (highlightedIndex + 1) % searchArray.length
+			// Scroll to the highlighted item
+			document.getElementsByClassName("autocomplete-items")[highlightedIndex].scrollIntoView({ behavior: "smooth", block: "center" })
+		} else if (event.key === "ArrowUp" && searchArray.length > 0 && searchLength > 0) {
+			highlightedIndex = (highlightedIndex - 1 + searchArray.length) % searchArray.length
+			// Scroll to the highlighted item
+			document.getElementsByClassName("autocomplete-items")[highlightedIndex].scrollIntoView({ behavior: "smooth", block: "center" })
+		} else if (event.key === "Enter" && searchArray.length > 0 && searchLength > 0) {
+			if (highlightedIndex >= 0 && highlightedIndex < searchArray.length) {
+				selectedSearchResult(searchArray[highlightedIndex])
+			}
+		}
+	}
 
-const selectedSearchResult = (selected) => {
-    selectedSearchValue = ''
-    selectedSearchValue = selected[propToFilter]
-    inputFieldLength = 0
-    highlightedIndex = -1
-    searchResult = ''
-    selectedObj = selected;
-}
-
+	const selectedSearchResult = (selected) => {
+		selectedSearchValue = ""
+		selectedSearchValue = selected[propToFilter]
+		inputFieldLength = 0
+		highlightedIndex = -1
+		searchResult = ""
+		selectedObj = selected
+	}
 </script>
 
 <main>
