@@ -1,14 +1,14 @@
 <script>
-    import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import Modal from "../../lib/components/Modal.svelte";
-    import { getNettsperreToken, getBlocks, getStudents, putBlock, deleteBlock, getExtendedUserInfo } from "../../lib/useApi.js";
-    import { onMount } from "svelte";
-    import { prettyPrintDate } from "../../lib/helpers/pretty-date"
-    import { prettyPrintBlock } from "../../lib/helpers/pretty-block-type"
-    import { superUserImposter } from "../../lib/store"
-    import { prettyPrintStatus } from "../../lib/helpers/pretty-status"
-    import { get } from "svelte/store";
-    import { goto } from '$app/navigation'
+  import IconSpinner from "../../lib/components/IconSpinner.svelte";
+  import Modal from "../../lib/components/Modal.svelte";
+  import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "$lib/useApi.js";
+  import { onMount } from "svelte";
+  import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
+  import { prettyPrintBlock } from "$lib/helpers/pretty-block-type.js"
+  import { superUserImposter } from "$lib/store.js"
+  import { prettyPrintStatus } from "$lib/helpers/pretty-status.js"
+  import { get } from "svelte/store";
+  import { goto } from '$app/navigation'
 
     let token
     let showActive = false
@@ -35,8 +35,7 @@
     })
 
     const getBlocksData = async (status, upn, school) => {
-        const blocks = await getBlocks(status, upn, school)
-        return blocks
+      return await getBlocks(status, upn, school)
     }
 
     const showActiveBlocks = () => {
@@ -388,8 +387,8 @@
                                 <div class="blockSelection">
                                     {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
                                         <div>
-                                            <input type="radio"  id="radio1" name="radioGroup" value="Eksamensmodus" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
-                                            <label for="radio1" value="">Eksamen med eksamenshjelpemidler</label>
+                                            <input type="radio" id="radio1" name="radioGroup" value="Eksamensmodus" disabled={!editBlockType} checked={detailsData.typeBlock.type === 'eksamen' ? true : ''}>
+                                            <label for="radio1">Eksamen med eksamenshjelpemidler</label>
                                         </div>
                                     {/if}
 
@@ -398,20 +397,20 @@
 
                                     {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}
                                         <div>
-                                            <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
-                                            <label for="radio3" value="">Ingen internett tilgang</label>
+                                            <input type="radio" id="radio3" name="radioGroup" value="fullBlock" disabled={!editBlockType} checked={detailsData.typeBlock.type === 'fullBlock' ? true : ''}>
+                                            <label for="radio3">Ingen internett tilgang</label>
                                         </div>
                                     {/if}
                                     {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
                                         <div>
-                                            <input type="radio" id="radio4" name="radioGroup" value="forms" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'forms' ? true : ''}>
-                                            <label for="radio4" value="">Prøve i Forms uten filopplastning og uten eksamenshjelpemidler</label>
+                                            <input type="radio" id="radio4" name="radioGroup" value="forms" disabled={!editBlockType} checked={detailsData.typeBlock.type === 'forms' ? true : ''}>
+                                            <label for="radio4">Prøve i Forms uten filopplastning og uten eksamenshjelpemidler</label>
                                         </div>
                                     {/if}
                                     {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
                                         <div>
-                                            <input type="radio" id="radio5" name="radioGroup" value="formsFile" disabled={editBlockType ? false : true} checked={detailsData.typeBlock.type === 'formsFile' ? true : ''}>
-                                            <label for="radio5" value="">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
+                                            <input type="radio" id="radio5" name="radioGroup" value="formsFile" disabled={!editBlockType} checked={detailsData.typeBlock.type === 'formsFile' ? true : ''}>
+                                            <label for="radio5">Prøve i Forms med filopplastning og med eksamenshjelpemidler</label>
                                         </div>
                                     {/if}
                                 </div>
@@ -423,12 +422,12 @@
                                 <div class="dateTimePicker">
                                     <label for="startTime">Start tidspunkt:</label>
                                     {#if detailsData.status === 'pending'}
-                                        <input type="datetime-local" value={detailsData.startBlock} disabled={editBlockDate ? false : true} id="startTime" name="startTime">
+                                        <input type="datetime-local" value={detailsData.startBlock} disabled={!editBlockDate} id="startTime" name="startTime">
                                     {:else}
                                         <input type="datetime-local" value={detailsData.startBlock} disabled={true} id="startTime" name="startTime">
                                     {/if}
                                     <label for="endTime">Slutt tidspunkt:</label>
-                                    <input type="datetime-local" value={detailsData.endBlock} disabled={editBlockDate ? false : true} id="endTime" name="endTime">
+                                    <input type="datetime-local" value={detailsData.endBlock} disabled={!editBlockDate} id="endTime" name="endTime">
                                 </div>
                             </div>
                             <br>
@@ -442,11 +441,11 @@
                                     <div class="center">
                                         <IconSpinner/>
                                     </div>
-                                {:then} 
+                                {:then _} 
                                     {#each blockedStudents as student, j}
                                         <div class="ck-button" style="background-color: var(--gress-90);">
                                             <label>
-                                                <input type="checkbox" id="checkbox" name="selectedStudents" value={JSON.stringify(student)} disabled={editBlockStudents ? false : true}><span>{student.displayName}</span>
+                                                <input type="checkbox" id="checkbox" name="selectedStudents" value={JSON.stringify(student)} disabled={!editBlockStudents}><span>{student.displayName}</span>
                                             </label>
                                         </div>
                                     {/each}
@@ -454,7 +453,7 @@
                                         {#each allStudents as student, j}
                                             <div class="ck-button-add">
                                                 <label>
-                                                    <input type="checkbox" id="checkbox" name="selectedStudents" value={JSON.stringify(student)} disabled={editBlockStudents ? false : true}><span>{student.displayName}</span>
+                                                    <input type="checkbox" id="checkbox" name="selectedStudents" value={JSON.stringify(student)} disabled={!editBlockStudents}><span>{student.displayName}</span>
                                                 </label>
                                             </div>
                                         {/each}
@@ -657,8 +656,8 @@
 		display: grid;
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(5, 1fr);
-        grid-column-gap: 0px;
-        grid-row-gap: 0px;
+        grid-column-gap: 0;
+        grid-row-gap: 0;
 	}
     .schoolDataGrid {
         display: flex;
@@ -674,7 +673,7 @@
         gap: 0.5rem;
     }
 	.blockRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .center {
         display: flex;
@@ -704,11 +703,11 @@
         margin-left: auto;
     }
 
-    .blockDiv {
+    /*.blockDiv {
         display: flex;
         flex-direction: column;
         padding: 0rem 2.5rem;
-    }
+    }*/
 
     .studentRow {
         align-items: center;
@@ -741,7 +740,7 @@
 
     .ck-button label input {
         /* 
-            Display none to avoid the focus onto the lable that was out of sight ontop of the page. 
+            Display none to avoid the focus onto the label that was out of sight on top of the page. 
             The focus was the reason for scrolling to the top of the page for each press 🤡 
         */
         /* position:absolute;
@@ -777,7 +776,7 @@
 
     .ck-button-add label input {
         /* 
-            Display none to avoid the focus onto the lable that was out of sight ontop of the page. 
+            Display none to avoid the focus onto the label that was out of sight on top of the page. 
             The focus was the reason for scrolling to the top of the page for each press 🤡 
         */
         /* position:absolute;
@@ -831,7 +830,7 @@
         overflow: auto;
     }
 
-    a:link, a:visited {
+    /*a:link, a:visited {
         padding: 4px;
         cursor: pointer;
         background-color: var(--himmel-20);
@@ -844,7 +843,7 @@
 
     a:hover, a:active {
         background-color: var(--himmel-30);
-    }
+    }*/
 
     .blockInfo {
         display: flex;

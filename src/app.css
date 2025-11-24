@@ -4,13 +4,12 @@
 
 /* COMMON CSS */
 body {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
 	height: 100%;
 	min-height: 95vh;
 	width: 100vw;
-	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
 	line-height: 1.4;
 }
 
@@ -99,7 +98,7 @@ button {
 } 
 
 button.link {
-	padding: 0px;
+	padding: 0;
 	background-color: inherit;
 	border: none;
 	text-decoration: underline;
@@ -108,7 +107,7 @@ button.link {
 
 button.link span {
 	font-size: 18px;
-	padding: 0px 5px;
+	padding: 0 5px;
 	vertical-align: middle !important;
 }
 button:hover {

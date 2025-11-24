@@ -7,13 +7,10 @@ import { jwtDecode } from 'jwt-decode'
  * @param {boolean} decoded | If the token should be decoded or not
  * @returns | The access token for the user
  */
-export const getNettsperreToken = async (decoded) => {
+export const getNettsperreToken = async (decoded = false) => {
   // MOCK access token for local api (the access token is just a demo token - nothing dangerous)
   // if (import.meta.env.VITE_MOCK_MSAL === 'true') return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhcGk6Ly9ibGFibGFiIiwiaXNzIjoiaHR0cHM6Ly9kdXN0LmR1c3Rlc2VuLnZ0ZmsubmV0L2hhaGFoLyIsImlhdCI6MTcwNjM2MDM5MiwibmJmIjoxNzA2MzYwMzkyLCJleHAiOjE3MDYzNjU4MjAsImFjciI6IjEiLCJhaW8iOiJiYWJhYmFiYWIiLCJhbXIiOlsicnNhIiwibWZhIl0sInJvbGVzIjpbImR1c3RfYWNjZXNzIiwiYWRtaW5fYWNjZXNzIl0sImFwcGlkIjoiZ3VkZW5lIHZlaXQiLCJhcHBpZGFjciI6IjAiLCJmYW1pbHlfbmFtZSI6IlNww7hrZWxzZSIsImdpdmVuX25hbWUiOiJEZW1vIiwiaXBhZGRyIjoiMjAwMToyMDIwOjQzNDE6ZmNiYjoyOTU5OjFjNmE6Y2RhYjoyNGUwIiwibmFtZSI6IkRlbW8gU3DDuGtlbHNlIiwib2lkIjoiMTIzNDUiLCJvbnByZW1fc2lkIjoiU1VTVVNVUyIsInJoIjoic2kgc2Vub3IiLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJtYXJpbmUiLCJ0aWQiOiJza2xlbW1lIiwidW5pcXVlX25hbWUiOiJkZW1vLnNwb2tlbHNlQHZlc3Rmb2xkZnlsa2Uubm8iLCJ1cG4iOiJkZW1vLnNwb2tlbHNlQHZlc3Rmb2xkZnlsa2Uubm8iLCJ1dGkiOiJob2hvbyIsInZlciI6IjEuMCJ9.64xzW92dVIXpZ_2OXQ6KQHITtYByDZJn1ycX3p_EkW4'
   let accessToken
-  if(!decoded) {
-    decoded = false
-  }
   try {
     const msalClient = await getMsalClient()
     if (!msalClient.getActiveAccount()) {
@@ -55,12 +52,11 @@ export const getNettsperreToken = async (decoded) => {
  */
 export const getClasses = async (upn) => { 
   const token = await getNettsperreToken()
-  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getOwnedGroups/${upn}`, {
+  return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getOwnedGroups/${upn}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
-  return response
 }
 
 /**
@@ -70,12 +66,11 @@ export const getClasses = async (upn) => {
  */
 export const getStudents = async (classId) => {
   const token = await getNettsperreToken()
-  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getGroupMembers/${classId}/${import.meta.env.VITE_RETURN_ONLY_STUDENTS}`, {
+  return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getGroupMembers/${classId}/${import.meta.env.VITE_RETURN_ONLY_STUDENTS}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
-  return response
 }
 
 /**
@@ -84,12 +79,11 @@ export const getStudents = async (classId) => {
  */
 export const getGroupMembers = async () => {
   const token = await getNettsperreToken()
-  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getGroupMembers/${import.meta.env.VITE_SEARCH_GROUP}/false`, {
+  return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getGroupMembers/${import.meta.env.VITE_SEARCH_GROUP}/false`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
-  return response
 }
 
 /**
@@ -140,11 +134,12 @@ export const putBlock = async (block) => {
  * 
  * @param {String} status | Comma separated string of statuses
  * @param {String} upn | The upn of the user to get blocks for
+ * @param {string} school - The school's identifier. Example: Porsgrunn videregående skole.
  */
 export const getBlocks = async (status, upn, school) => {
   const token = await getNettsperreToken()
   // Check if the upn or school is provided
-  if(upn === null && school === null) return { error: 'Missing valid param, must provide atleast one' }
+  if(upn === null && school === null) return { error: 'Missing valid param, must provide at least one' }
 
   const validStatus = ['pending', 'active', 'expired']
   // Check if the status is a comma separated list
@@ -157,19 +152,15 @@ export const getBlocks = async (status, upn, school) => {
       }
     })
     
-  } else {
-    // If the status is not valid, return an error
-    if(!validStatus.includes(status)) {
-      return { error: 'Invalid status' }
-    }
+  } else if (!validStatus.includes(status)) {
+    return {error: 'Invalid status'}
   }
-  
-  const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getBlocks/${status}/${upn}/${school}`, {
+
+  return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/getBlocks/${status}/${upn}/${school}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
-  return response
 }
 
 /**
@@ -207,12 +198,11 @@ export const validatePermission = async (requestor, teacher, sessionId) => {
   if(!sessionId) return { error: 'No sessionId provided' }
   const token = await getNettsperreToken()
   try {
-    const response = await axios.post(import.meta.env.VITE_NETTSPERRE_API_URL + '/validatePermission', { requestorUPN: requestor, teacherToBeEditedUPN: teacher, sessionId: sessionId }, {
+    return await axios.post(import.meta.env.VITE_NETTSPERRE_API_URL + '/validatePermission', {requestorUPN: requestor, teacherToBeEditedUPN: teacher, sessionId: sessionId}, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    return response
   } catch (error) {
     return error
   }
@@ -229,12 +219,11 @@ export const getExtendedUserInfo = async (upn) => {
   if(!upn) return { error: 'No upn provided' }
   const token = await getNettsperreToken()
   try {
-    const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/extendedUserInfo/${upn}`, {
+    return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/extendedUserInfo/${upn}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    return response
   } catch (error) {
     return error
   }
@@ -263,12 +252,11 @@ export const getHistory = async (teacher, course, school) => {
   course ? query += `${course}/` : query += 'null/'
   school ? query += `${school}` : query += 'null'
   try {
-    const response = await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/history/${query}`, {
+    return await axios.get(import.meta.env.VITE_NETTSPERRE_API_URL + `/history/${query}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    return response
   } catch (error) {
     return error
   }

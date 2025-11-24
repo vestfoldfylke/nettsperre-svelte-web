@@ -8,7 +8,7 @@ const msalConfig = {
     clientId: import.meta.env.VITE_CLIENT_ID ?? 'klientID',
     authority: import.meta.env.VITE_CLIENT_ISS ?? 'autiruireuir',
     redirectUri: import.meta.env.VITE_REDIRECT_URI ?? 'uriSomewhere',
-    navigateToLoginRequestUrl: false // Vi redirecter selv etter succesful login - MSAL klarer det særdeles dårlig...
+    navigateToLoginRequestUrl: false // Vi redirecter selv etter successful login - MSAL klarer det særdeles dårlig...
   },
   cache: {
     cacheLocation: 'sessionStorage', // This configures where your cache will be stored
@@ -45,7 +45,7 @@ export const getMsalClient = async () => {
 
 /**
  * @param {boolean} [forceLogin=false]
- * @param {boolean} [loginRequestUrl='/'] Hvilken path logget brukeren inn fra
+ * @param {string} [loginRequestUrl='/'] Hvilken path logget brukeren inn fra
  * @returns { Promise<LoginResponse> } loginResponse
  */
 export const login = async (forceLogin = false, loginRequestUrl = '/') => {
@@ -63,15 +63,4 @@ export const login = async (forceLogin = false, loginRequestUrl = '/') => {
     }
     msalClient.loginRedirect({ scopes: ['User.Read'], state: loginRequestUrl }) // Vi logger inn og slenger inn url der det logges på til state - slik at denne kommer med i loginResponse når det redirectes
   }
-}
-
-export const logout = async () => {
-  const msalClient = await getMsalClient()
-  const currentAccounts = msalClient.getAllAccounts()
-  if (currentAccounts.length === 0) return null
-  const currentAccount = currentAccounts[0]
-  await msalClient.logoutRedirect({
-    account: currentAccount,
-    postLogoutRedirectUri: import.meta.env.VITE_LOGOUT_URI
-  })
 }

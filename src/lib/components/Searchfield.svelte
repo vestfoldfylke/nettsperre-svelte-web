@@ -62,30 +62,28 @@ const selectedSearchResult = (selected) => {
             <button on:click={() => {selectedSearchValue = ''; inputFieldLength = 0; searchResult = ''; selectedObj = '';}}>X</button>
         {/if}
     </div>
-    <ul>
-        <div class="autocomplete-container">
-            {#each searchResult as obj, index}
-                {#if inputFieldLength === 0}
-                    <div style="display: none;">{obj}</div>
-                {:else}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <div
-                        class="autocomplete-items {highlightedIndex === index ? 'autocomplete-active' : ''}"
-                        role="button"
-                        tabindex="0"
-                        on:click={() => {
-                            selectedSearchResult(obj, inputFieldLength);
-                        }}
-                    >
-                        {#if propToFilter === ''} 
-                            {obj} 
-                        {:else} 
-                            {obj[propToFilter]} 
-                        {/if}
-                    </div>
-                {/if}
-            {/each}
-        </div>
+    <ul class="autocomplete-container">
+        {#each searchResult as obj, index}
+            {#if inputFieldLength === 0}
+                <div style="display: none;">{obj}</div>
+            {:else}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <div
+                    class="autocomplete-items {highlightedIndex === index ? 'autocomplete-active' : ''}"
+                    role="button"
+                    tabindex="0"
+                    on:click={() => {
+                        selectedSearchResult(obj, inputFieldLength);
+                    }}
+                >
+                    {#if propToFilter === ''} 
+                        {obj} 
+                    {:else} 
+                        {obj[propToFilter]} 
+                    {/if}
+                </div>
+            {/if}
+        {/each}
     </ul>
 </main>
 
@@ -144,11 +142,11 @@ const selectedSearchResult = (selected) => {
         color: #ffffff;
     }
 
-    .superUserFilter {
+    /*.superUserFilter {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
-    }
+    }*/
 </style>

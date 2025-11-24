@@ -1,13 +1,13 @@
 <script>
     import { onMount } from "svelte";
-    import { superUserImposter, teachersStore } from "../../lib/store"
+    import { superUserImposter, teachersStore } from "$lib/store.js"
     import { get } from "svelte/store";
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import { getNettsperreToken, getHistory, getGroupMembers } from "../../lib/useApi.js";
-    import { prettyPrintDate } from "../../lib/helpers/pretty-date"
-    import { schoolInfoTFK } from "../../lib/helpers/tfk-schools"
-    import { schoolInfoVFK } from "../../lib/helpers/vfk-schools"
-    import { syntaxHighlight } from "../../lib/helpers/highlight-json" 
+    import { getNettsperreToken, getHistory, getGroupMembers } from "$lib/useApi.js";
+    import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
+    import { schoolInfoTFK } from "$lib/helpers/tfk-schools.js"
+    import { schoolInfoVFK } from "$lib/helpers/vfk-schools.js"
+    import { syntaxHighlight } from "$lib/helpers/highlight-json.js" 
     import Searchfield from "../../lib/components/Searchfield.svelte"
 
     let token
@@ -145,12 +145,12 @@
             <div class="center">
                 <IconSpinner />
             </div>
-        {:then} 
+        {:then _} 
             {#await getHistoryData(token)}
                 <div class="center">
                     <IconSpinner />
                 </div>
-            {:then}
+            {:then _}
                 {#if showDetailsState}
                     {#if token.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)}
                         <pre>{@html syntaxHighlight(JSON.stringify(detailsData, null, 2))}</pre>
@@ -169,7 +169,7 @@
                                 <div class="center">
                                     <h3>Henter lærere...</h3>
                                 </div>
-                            {:then}
+                            {:then _}
                                 <div class="superUserFilter">
                                     <div class="searchFields">
                                         <Searchfield placeHolder="Søk etter lærer" propToFilter="displayName" arrayData={get(teachersStore)} bind:selectedObj={filterObj.teacher}></Searchfield>
@@ -210,7 +210,7 @@
                             <p>Ingen historikk funnet for bruker: <strong>{filterObj.teacher?.userPrincipalName ? filterObj.teacher.userPrincipalName : token.upn}</strong></p>
                         {:else}
                             <!-- 
-                                Sorted to show newset to oldest block. Had to sort here because the Object.entries messed with the order when a 0 was in front.
+                                Sorted to show newest to oldest block. Had to sort here because the Object.entries messed with the order when a 0 was in front.
                                 09, 10, 11 turned into 10, 11, 09. Sorting b - a to get newest first. a-b would give oldest first.
                             -->
                             {#each Object.entries(groupedHistory).sort(([a], [b]) => b - a) as [month, blocks], i} 
@@ -294,11 +294,11 @@
         padding: 0.5rem;
     }
 
-    .selectedFilters {
+    /*.selectedFilters {
         padding: 0.5rem;
         border: 1px solid #ccc;
         margin: 0.5rem;
-    }
+    }*/
 
     .blockRow {
 		display: flex;
@@ -307,7 +307,7 @@
 		gap: 0.5rem;
 	}
 	.blockRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .center {
         display: flex;

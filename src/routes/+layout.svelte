@@ -2,7 +2,7 @@
     import '../app.css';
     import { login, getMsalClient } from '../lib/auth/msal-auth.js'
     import { getNettsperreToken } from '../lib/useApi.js'
-    import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte'
+    import { onMount } from 'svelte'
     import { page } from '$app/stores'
     import { goto } from '$app/navigation'
     import logoTFK from '$lib/assets/logo.svg'
@@ -30,8 +30,8 @@
       }
       authenticate()   
       return () => {
-        // console.log('Destroyyyy')
-        // on destroy (probs just wipe state)
+        // console.log('Destroy')
+        // on destroy (probably just wipe state)
       }
     })
 
@@ -48,8 +48,7 @@
 
     const isActiveRoute = (route, currentRoute) => {
       if (currentRoute === route) return true
-      if (route.length > 1 && currentRoute.substring(0, route.length) === route) return true
-      return false
+      return route.length > 1 && currentRoute.substring(0, route.length) === route;
     }
 
     const getInitials = (name) => {
@@ -129,7 +128,7 @@
       <div class="loading">
         <IconSpinner width={"32px"} />
       </div>
-    {:then}
+    {:then _}
       {#if token.roles.length === 0}
         <div class="contentContainer">
           <h1>Hei, {token.name}!</h1>
@@ -197,9 +196,9 @@
   .contentContainer {
     padding: 1rem 4rem;
   }
-  .content {
-    margin: 0rem auto 0rem auto;
-  }
+  /*.content {
+    margin: 0 auto 0 auto;
+  }*/
   .layout {
     display: flex;
   }
@@ -208,7 +207,7 @@
     flex-direction: column;
     flex-shrink: 0;
     align-items: center;
-    padding: 1.5rem 0rem;
+    padding: 1.5rem 0;
     display: flex;
     height: 100%;
     background-color: var(--vann-30);
@@ -235,7 +234,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem 0rem;
+    padding: 1rem 0;
     cursor: pointer;
   }
   .menuItem span {
@@ -251,8 +250,8 @@
   .pageContent {
     flex-grow: 1;
     max-width: 80rem;
-    margin: 0rem auto;
-    padding: 0rem;
+    margin: 0 auto;
+    padding: 0;
   }
   .topbar {
     display: flex;
@@ -274,7 +273,7 @@
     .menubarMobile {
       z-index: 100;
       position: fixed;
-      bottom: 0rem;
+      bottom: 0;
       align-items: center;
       justify-content: space-between;
       display: flex;
@@ -296,14 +295,14 @@
       font-size: 1.5rem;
     }
     .topbar {
-      padding: 0rem 1rem;
+      padding: 0 1rem;
     }
     .contentContainer {
       padding: 1rem 1rem 5rem 1rem;
     }
-    .pathtracker {
+    /*.pathtracker {
       padding: 0.4rem 1rem;
-    }
+    }*/
     .userContainer .displayName {
       display: none;
     }

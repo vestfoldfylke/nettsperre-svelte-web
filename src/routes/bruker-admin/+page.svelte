@@ -1,8 +1,8 @@
 <script>
     import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import { getNettsperreToken, getGroupMembers, validatePermission } from "../../lib/useApi.js";
+    import { getNettsperreToken, getGroupMembers, validatePermission } from "$lib/useApi.js";
     import { onMount } from "svelte";
-    import { superUserImposter, teachersStore, superUserImposterSessionID } from "../../lib/store"
+    import { superUserImposter, teachersStore, superUserImposterSessionID } from "$lib/store.js"
     import { get } from "svelte/store";
     import { goto } from '$app/navigation'
 
@@ -14,7 +14,7 @@
     $: imposting = ''
     $: error = false
     $: processing = false
-    $: success = false
+    //$: success = false
 
     onMount( async () => {
         token = await getNettsperreToken(true)
@@ -52,7 +52,7 @@
     const generateGUID = () => {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             // Replace x or y with random hex digit
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
             // Return the random guid like string
             return v.toString(16);
         });
@@ -122,7 +122,7 @@
                     <div class="loading">
                         <IconSpinner width={"32px"} />
                     </div>
-                {:then}
+                {:then _}
                     {#if !token.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)}    
                         <div>
                             <p>Du har ikke tilgang til denne siden</p>
@@ -218,7 +218,7 @@
 		gap: 0.5rem;
 	}
 	.teacherRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .teacherInfo {
 		width: 15rem;
@@ -252,7 +252,7 @@
     }
 
     .icon-input span {
-        padding: 0rem 0rem 0rem 0rem;
+        padding: 0;
         font-size: 1.5rem;
     }
 

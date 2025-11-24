@@ -1,6 +1,6 @@
 export const schoolInfoTFK = [
     {
-        officeLocation: 'Bamble videregående skole', // Officelocation som kommer og matcher fra AD (graph)
+        officeLocation: 'Bamble videregående skole', // Office location som kommer og matcher fra AD (graph)
         primaryLocation: 'Bamble videregående skole',
     },
     {

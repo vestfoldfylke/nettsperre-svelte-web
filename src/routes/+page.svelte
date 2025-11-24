@@ -1,12 +1,12 @@
 <script>
-    import { onMount } from "svelte";
-    import { getClasses, getStudents, getNettsperreToken, postBlock, getExtendedUserInfo } from "../lib/useApi.js";
-    import IconSpinner from "../lib/components/IconSpinner.svelte";
-    import { prettyPrintDate } from "../lib/helpers/pretty-date"
-    import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
-    import { get } from 'svelte/store'
-    import { superUserImposter } from "../lib/store.js";
-    import { goto } from '$app/navigation'
+  import { onMount } from "svelte";
+  import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "../lib/useApi.js";
+  import IconSpinner from "../lib/components/IconSpinner.svelte";
+  import { prettyPrintDate } from "../lib/helpers/pretty-date"
+  import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
+  import { get } from 'svelte/store'
+  import { superUserImposter } from "../lib/store.js";
+  import { goto } from '$app/navigation'
 
     let showStudents = []
     let showBlock = []
@@ -27,13 +27,11 @@
     })
 
     const myClasses = async (upn) => {
-        const response = await getClasses(upn)
-        return response
+      return await getClasses(upn)
     }
 
     const myStudents = async (classId) => {
-        const response = await getStudents(classId)
-        return response
+      return await getStudents(classId)
     }
 
     const showStudentDiv = (i) => {
@@ -60,7 +58,7 @@
         showBlock[i] = !showBlock[i]
     }
 
-    const submintBlock = async (classes, i) => {
+    const submitBlock = async (classes, i) => {
         let blockObject = {
             status: 'pending',
             students: [],
@@ -296,7 +294,7 @@
                             {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
-                                    <label for="radio1" value="">Eksamen med eksamenshjelpemidler</label>
+                                    <label for="radio1">Eksamen med eksamenshjelpemidler</label>
                                 </div>
                             {/if}
                             <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
@@ -304,19 +302,19 @@
                             {#if import.meta.env.VITE_DISABLE_FULLBLOCK !== 'true'}    
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio3" name="radioGroup" value="fullBlock">
-                                    <label for="radio3" value="">Ingen internett tilgang</label>
+                                    <label for="radio3">Ingen internett tilgang</label>
                                 </div>
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio4" name="radioGroup" value="forms">
-                                    <label for="radio4" value="">{import.meta.env.VITE_FORMS_OPTION_TEXT}</label>
+                                    <label for="radio4">{import.meta.env.VITE_FORMS_OPTION_TEXT}</label>
                                 </div>
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
-                                    <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
+                                    <label for="radio5">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
                                 </div>
                             {/if}
                             <div>
@@ -345,7 +343,7 @@
                             </ul>
                         {/if}
                         <div class="centerButtons">
-                            <button disabled={processing ? processing : processing} on:click={ async () => submintBlock(await response.data, i)}>Sett sperremodus</button>
+                            <button disabled={processing ? processing : processing} on:click={ async () => submitBlock(await response.data, i)}>Sett sperremodus</button>
                             <button disabled={processing ? processing : processing} on:click={ () => closeBlock(i)}>Avbryt</button>
                         </div>
                         {/if}
@@ -365,7 +363,7 @@
 		gap: 0.5rem;
 	}
 	.classRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .center {
         display: flex;
@@ -387,7 +385,7 @@
     .studentDiv {
         display: flex;
         flex-direction: column;
-        padding: 0rem 2.5rem;
+        padding: 0 2.5rem;
     }
     .studentRow {
         align-items: center;
@@ -407,14 +405,14 @@
     .blockSettings {
         display: flex;
         flex-direction: column;
-        padding: 0rem 2.5rem;
+        padding: 0 2.5rem;
     }
     .blockSettingsDisabled {
         display: flex;
         color: grey;
         background-color: rgb(0, 0, 0, .2);
         flex-direction: column;
-        padding: 0rem 2.5rem;
+        padding: 0 2.5rem;
     }
     .dateTimePicker {
         display: flex;
@@ -452,7 +450,7 @@
 
     .ck-button label input {
         /* 
-            Display none to avoid the focus onto the lable that was out of sight ontop of the page. 
+            Display none to avoid the focus onto the label that was out of sight on top of the page. 
             The focus was the reason for scrolling to the top of the page for each press 🤡 
         */
         /* position:absolute;
@@ -501,7 +499,7 @@
         overflow: auto;
     }
 
-    a:link, a:visited {
+    /*a:link, a:visited {
         padding: 4px;
         cursor: pointer;
         background-color: var(--himmel-20);
@@ -514,7 +512,7 @@
 
     a:hover, a:active {
         background-color: var(--himmel-30);
-    }
+    }*/
 
     .blockInfo {
         display: flex;
@@ -536,6 +534,5 @@
         border-radius: 5px;
         padding: 1rem;
         background-color: var(--vann-10);
-        border-radius: 5px;
     }
 </style>

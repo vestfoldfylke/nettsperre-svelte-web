@@ -1,6 +1,6 @@
 export const schoolInfoVFK = [
     {
-        officeLocation: 'Holmestrand videregående skole', // Officelocation som kommer og matcher fra AD (graph)
+        officeLocation: 'Holmestrand videregående skole', // Office location som kommer og matcher fra AD (graph)
         primaryLocation: 'Holmestrand videregående skole', 
     },
     {
