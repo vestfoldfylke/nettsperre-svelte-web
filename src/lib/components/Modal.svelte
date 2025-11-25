@@ -1,17 +1,17 @@
 <script>
-	export let showModal; // boolean
+	export let showModal // boolean
 	export let disableClickOutSide = false // boolean
 	export let disableStandardButton = false // boolean
 
-	let dialog; // HTMLDialogElement
+	let dialog // HTMLDialogElement
 
-	$: if (dialog && showModal) dialog.showModal();
-	
+	$: if (dialog && showModal) dialog.showModal()
+
 	const closeModal = () => {
 		// Endable scrolling when modal is closed
-		document.body.style.height = "auto";
-		document.body.style.overflow = "auto";
-		dialog.close();
+		document.body.style.height = "auto"
+		document.body.style.overflow = "auto"
+		dialog.close()
 	}
 </script>
 
@@ -77,13 +77,12 @@
 	.mainContent {
 		display: flex;
 		justify-content: center;
-		margin: auto;
 		padding: 10px;
 		overflow: auto;
 		-ms-overflow-style: none;  /* Internet Explorer 10+ */
     	scrollbar-width: none;  /* Firefox */
 		max-height:24em;
-		margin-bottom: 2em;
+		margin: auto auto 2em;
 	}
 
 	.mainContent::-webkit-scrollbar {
@@ -100,11 +99,10 @@
         justify-content: center;
     }
 
-	header {
+	/*header {
 		padding: 16px;
-		/* ... */
 	}
 	header:empty {
 		display: none;
-	}
+	}*/
 </style>

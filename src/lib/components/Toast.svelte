@@ -1,7 +1,7 @@
 <script>
-  export let status = "failed"
-  export let toastTitle = "Suksess 👍"
-  export let toastMessage = "Dokumentet er lagret og lagt til i køen. Sender deg tilbake til elevsiden."
+	export let status = "failed"
+	export let toastTitle = "Suksess 👍"
+	export let toastMessage = "Dokumentet er lagret og lagt til i køen. Sender deg tilbake til elevsiden."
 </script>
 
 <div class="toast {status}">
@@ -15,7 +15,6 @@
     /* border: 2px solid var(--gress-30);
     border-right: 0px solid var(--gress-30); */
     position: fixed;
-    top: 5rem;
     top: 10rem;
     z-index: 200;
     padding: 2rem 3rem 2rem 2rem;
@@ -23,15 +22,15 @@
     animation: slide 0.5s forwards;
   }
   .toastTitle {
-    margin: 0rem; 
+    margin: 0; 
   }
-  .success {
+  /*.success {
     background-color: var(--gress-30);
   }
 
   .failed {
     background-color: var(--nype-30);
-  }
+  }*/
 
   @-webkit-keyframes slide {
       100% { right: 0; }

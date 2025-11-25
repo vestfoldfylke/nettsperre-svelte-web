@@ -1,95 +1,97 @@
 <script>
-    import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import { getNettsperreToken, getGroupMembers, validatePermission } from "../../lib/useApi.js";
-    import { onMount } from "svelte";
-    import { superUserImposter, teachersStore, superUserImposterSessionID } from "../../lib/store"
-    import { get } from "svelte/store";
-    import { goto } from '$app/navigation'
+	import { onMount } from "svelte"
+	import { get } from "svelte/store"
+	import { goto } from "$app/navigation"
+	import { superUserImposter, superUserImposterSessionID, teachersStore } from "$lib/store.js"
+	import { getGroupMembers, getNettsperreToken, validatePermission } from "$lib/useApi.js"
+	import IconSpinner from "../../lib/components/IconSpinner.svelte"
 
-    let token
-    let groupMembersArray
-    $: teachers = ''
-    $: errorMsg = ''
-    $: searchValue = ''
-    $: imposting = ''
-    $: error = false
-    $: processing = false
-    $: success = false
+	let token
+	let groupMembersArray
+	$: teachers = ""
+	$: errorMsg = ""
+	$: searchValue = ""
+	$: imposting = ""
+	$: error = false
+	$: processing = false
+	//$: success = false
 
-    onMount( async () => {
-        token = await getNettsperreToken(true)
-        imposting = get(superUserImposter)
-    })
-    const checkRoles = async (token) => {
-        if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
-            // Role not found in token roles array, error true
-            console.log('superuser')
-        }
-    }
+	onMount(async () => {
+		token = await getNettsperreToken(true)
+		imposting = get(superUserImposter)
+	})
+	const checkRoles = async (token) => {
+		if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
+			// Role not found in token roles array, error true
+			console.log("superuser")
+		}
+	}
 
-    const getTeachers = async () => {
-        try {
-            if(get(teachersStore).length === 0) {
-                const teachers = await getGroupMembers()
-                groupMembersArray = teachers.data
-                teachersStore.set(groupMembersArray)
-            } else {
-                groupMembersArray = get(teachersStore)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
+	const getTeachers = async () => {
+		try {
+			if (get(teachersStore).length === 0) {
+				const teachers = await getGroupMembers()
+				groupMembersArray = teachers.data
+				teachersStore.set(groupMembersArray)
+				return
+			}
 
-    const search = (searchValue) => {
+			groupMembersArray = get(teachersStore)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const search = (searchValue) => {
 		const filterFunc = (teacher) => {
 			const sv = searchValue.toLowerCase()
-			return (teacher.displayName.toLowerCase().startsWith(sv) || teacher.userPrincipalName.toLowerCase().startsWith(sv))
+			return teacher.displayName.toLowerCase().startsWith(sv) || teacher.userPrincipalName.toLowerCase().startsWith(sv)
 		}
 		teachers = groupMembersArray.filter(filterFunc)
 	}
 
-    const generateGUID = () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            // Replace x or y with random hex digit
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            // Return the random guid like string
-            return v.toString(16);
-        });
-    }
+	const generateGUID = () => {
+		return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+			// Replace x or y with random hex digit
+			let r = (Math.random() * 16) | 0,
+				v = c === "x" ? r : (r & 0x3) | 0x8
+			// Return the random guid like string
+			return v.toString(16)
+		})
+	}
 
-    const setAdmin = async (requestor, teacher) => {
-        processing = true
-        // Create a random session id (guid) for the user
-        const sessionId = generateGUID()
-        superUserImposterSessionID.set(sessionId)
-        const permission = await validatePermission(requestor, teacher.userPrincipalName, sessionId)
-        if(permission.status === 200) {
-            superUserImposter.set({
-                requestor: requestor,
-                teacher: teacher
-            })
-            processing = false
-            goto('/')
-            return true
-        } else {
-            processing = false
-            error = true
-            errorMsg = {
-                status: permission.status,
-                message: permission.message,
-                customMessage: 'Du har ikke tilgang til å administrere denne brukeren'
-            }
-        }
-    }
+	const setAdmin = async (requestor, teacher) => {
+		processing = true
+		// Create a random session id (guid) for the user
+		const sessionId = generateGUID()
+		superUserImposterSessionID.set(sessionId)
+		const permission = await validatePermission(requestor, teacher.userPrincipalName, sessionId)
 
-    const resetImposter = () => {
-        processing = true
-        superUserImposter.set([])
-        processing = false
-        goto('/')
-    }
+		if (permission.status === 200) {
+			superUserImposter.set({
+				requestor: requestor,
+				teacher: teacher
+			})
+			processing = false
+			goto("/")
+			return true
+		}
 
+		processing = false
+		error = true
+		errorMsg = {
+			status: permission.status,
+			message: permission.message,
+			customMessage: "Du har ikke tilgang til å administrere denne brukeren"
+		}
+	}
+
+	const resetImposter = () => {
+		processing = true
+		superUserImposter.set([])
+		processing = false
+		goto("/")
+	}
 </script>
 
 <main>
@@ -122,7 +124,7 @@
                     <div class="loading">
                         <IconSpinner width={"32px"} />
                     </div>
-                {:then}
+                {:then _}
                     {#if !token.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)}    
                         <div>
                             <p>Du har ikke tilgang til denne siden</p>
@@ -139,7 +141,7 @@
                             <div class="center">
                                 <IconSpinner/>
                             </div>
-                        {:then} 
+                        {:then _}
                             <div>
                                 <h1>Hei, {token.name}!</h1>
                                 {#if get(superUserImposter).length !== 0}
@@ -218,7 +220,7 @@
 		gap: 0.5rem;
 	}
 	.teacherRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .teacherInfo {
 		width: 15rem;
@@ -252,7 +254,7 @@
     }
 
     .icon-input span {
-        padding: 0rem 0rem 0rem 0rem;
+        padding: 0;
         font-size: 1.5rem;
     }
 

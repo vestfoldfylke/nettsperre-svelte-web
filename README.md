@@ -16,7 +16,7 @@ En mongoDB database, se intern docs for detaljer.
     Historie - inneholder alle sperringer som er utgått/slettet
 
 # Nettsperre
-En Webapp med sveltekit som er hostet i vercel.
+En Webapp med SvelteKit som er hostet i Vercel.
 Løsningen gir lærere og andre superbrukere mulighet til å sperre undervisningsgrupper og enkelt elever fra ulike løsninger og internett. 
 
 De ulike sperrene: 
@@ -25,7 +25,7 @@ De ulike sperrene:
 3. Eksamen.
 4. Offline. (TBA)
 
-## Deploye løsningen 
+## Deploy løsningen 
 ### Requirements
 Se intern docs for detaljer. 
 
@@ -38,15 +38,15 @@ Opprett en .env fil
 | VITE_CLIENT_ID                  |                                  | Klient-ID for applikasjonen                                                 |
 | VITE_TENANT_ID                  |                                   | Tenant-ID for Azure AD                                                   |
 | VITE_CLIENT_ISS                 | | Utsteder-URL for Azure AD                                                   |
-| VITE_REDIRECT_URI               | http://localhost:5173                                                 | Omdirigerings-URI                                       |
+| VITE_REDIRECT_URI               | http://localhost:5173                                                 | Redirect URI                                       |
 | VITE_DEFAULT_SCOPE              |        | Standard scope for API-tilgang                                              |
 | VITE_RETURN_ONLY_STUDENTS       | true/false                                                                  | Returner kun studenter (i test kan dette settes til false for å teste andre brukere) |
 | VITE_NETTSPERRE_API_URL         | http://localhost:7071/api                                             | URL til API for nettsperre                                                  |
 | VITE_MOCK_MSAL                  |  true/false                                                                 | Bruk mock MSAL (false for ekte MSAL)                                        |
 | VITE_COUNTY                     | Telemark                                                              | Fylke                                                                      |
-| VITE_DISABLE_EKSAMEN            |  true/false                                                                 | Deaktiver eksamenssperre                                                    |
-| VITE_DISABLE_FULLBLOCK          |  true/false                                                                 | Deaktiver full blokkering                                                   |
-| VITE_DISABLE_PROVE              |  true/false                                                                  | Deaktiver prøvesperre                                                       |
+| VITE_DISABLE_EKSAMEN            |  true/false                                                                 | Deaktivere eksamensperre                                                    |
+| VITE_DISABLE_FULLBLOCK          |  true/false                                                                 | Deaktivere full blokkering                                                   |
+| VITE_DISABLE_PROVE              |  true/false                                                                  | Deaktivere prøvesperre                                                       |
 | VITE_SUPERUSER_ROLE             |                                                                   | Rolle for superbruker                                                       |
 | VITE_SEARCH_GROUP               |                                   | Gruppe-ID for søk                                                           |
 ### Local Development
@@ -58,17 +58,17 @@ npm i
 npm run dev
 ```
 ## Backend
-Backenden er bygget i azure functions, du kan lese mer om den her: [azf-nettsperre](https://github.com/telemarkfylke/azf-nettsperre)
+Backend er bygget i azure functions, du kan lese mer om den her: [azf-nettsperre](https://github.com/telemarkfylke/azf-nettsperre)
 
 
 ## Roller
 Kort beskrivelse av de ulike rollene, hva de kan gjøre og generelt hvem som har tilgang til rollene. 
-1. Lærer - default access til appilkasjonen. Læreren har lov til å sette sperre på elevene i sin(e) undervisningsgrupper
+1. Lærer - default access til applikasjonen. Læreren har lov til å sette sperre på elevene i sin(e) undervisningsgrupper
 2. Superbruker - Ledere/Administrasjon/Servicedesk, lov til å sette sperre på elever/undervinsinsgrupper innad på skolen og på vegne av en lærer. 
 3. Admin - Utviklere. Se logger og detaljer i løsningen.
 
-## Usecases
-Generell beskrivelse av noen usecaser
+## Use cases
+Generell beskrivelse av noen use cases
 ### Lærer 
 #### Sperre en enkelt elev
 1. Lærer søker opp undervisningsgruppen som eleven er medlem av.
