@@ -1,113 +1,112 @@
 <script>
-    import '../app.css';
-    import { login, getMsalClient } from '../lib/auth/msal-auth.js'
-    import { getNettsperreToken } from '../lib/useApi.js'
-    import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte'
-    import { page } from '$app/stores'
-    import { goto } from '$app/navigation'
-    import logoTFK from '$lib/assets/logo.svg'
-    import logoVFK from '$lib/assets/VFK_logo.svg'
-    import favTFK from '$lib/assets/favicon-32x32.png'
-    import favVFK from '$lib/assets/vestfold-favicon-32x32.png'
-    import IconSpinner from '../lib/components/IconSpinner.svelte'
-    
-    let account = null
+	import "../app.css"
+	import { onMount } from "svelte"
+	import { goto } from "$app/navigation"
+	import { page } from "$app/stores"
+	import favTFK from "$lib/assets/favicon-32x32.png"
+	import logoTFK from "$lib/assets/logo.svg"
+	import logoVFK from "$lib/assets/VFK_logo.svg"
+	import favVFK from "$lib/assets/vestfold-favicon-32x32.png"
+	import { getMsalClient, login } from "../lib/auth/msal-auth.js"
+	import IconSpinner from "../lib/components/IconSpinner.svelte"
+	import { getNettsperreToken } from "../lib/useApi.js"
 
-    onMount(async () => {
-      const authenticate = async () => {
-        const msalClient = await getMsalClient()
-        if (msalClient.getActiveAccount()) {
-          account = msalClient.getActiveAccount()
-          // console.log('Active account:', account)
-        }
-        if (!account) {
-          const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
-          account = loginResponse.account
-          if ($page.url.pathname !== loginResponse.loginRequestUrl) {
-            goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
-          }
-        }
-      }
-      authenticate()   
-      return () => {
-        // console.log('Destroyyyy')
-        // on destroy (probs just wipe state)
-      }
-    })
+	let account = null
 
-    const appTitle = "Nettsperre"
-    let logo = ""
-    let iconPath = ""
-    if(import.meta.env.VITE_COUNTY === 'Telemark') {
-      logo = logoTFK
-      iconPath = favTFK
-    } else {
-      logo = logoVFK
-      iconPath = favVFK
-    }
+	onMount(async () => {
+		const authenticate = async () => {
+			const msalClient = await getMsalClient()
+			if (msalClient.getActiveAccount()) {
+				account = msalClient.getActiveAccount()
+				// console.log('Active account:', account)
+			}
+			if (!account) {
+				const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+				account = loginResponse.account
+				if ($page.url.pathname !== loginResponse.loginRequestUrl) {
+					goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
+				}
+			}
+		}
+		authenticate()
+		return () => {
+			// console.log('Destroy')
+			// on destroy (probably just wipe state)
+		}
+	})
 
-    const isActiveRoute = (route, currentRoute) => {
-      if (currentRoute === route) return true
-      if (route.length > 1 && currentRoute.substring(0, route.length) === route) return true
-      return false
-    }
+	const appTitle = "Nettsperre"
+	let logo = ""
+	let iconPath = ""
+	if (import.meta.env.VITE_COUNTY === "Telemark") {
+		logo = logoTFK
+		iconPath = favTFK
+	} else {
+		logo = logoVFK
+		iconPath = favVFK
+	}
 
-    const getInitials = (name) => {
-      const firstInitial = name.substring(0,1)
-      const nameList = name.split(' ')
-      if (nameList.length < 2) return firstInitial
-      const lastInitial = nameList[nameList.length-1].substring(0,1)
-      return `${firstInitial}.${lastInitial}`
-    }
+	const isActiveRoute = (route, currentRoute) => {
+		if (currentRoute === route) return true
+		return route.length > 1 && currentRoute.substring(0, route.length) === route
+	}
 
-    $: sideMenuItems = [
-    {
-      title: 'Hjem',
-      href: '/',
-      icon: 'home'
-    },
-    {
-      title: 'Sperringer',
-      href: '/sperringer',
-      icon: 'gpp_bad'
-    },
-    {
-      title: 'Historikk',
-      href: '/historikk',
-      icon: 'history'
-    },
-    {
-      title: 'Hjelp',
-      href: '/hjelp',
-      icon: 'help'
-    },
-     // {
-    //   title: 'Admin',
-    //   href: '/admin',
-    //   icon: 'admin_panel_settings'
-    // },
-    // {
-    //   title: 'Bruker Admin',
-    //   href: '/bruker-admin',
-    //   icon: 'supervisor_account'
-    // }
-  ]
-  const checkRoles = async (token) => {
-    if(token?.roles.includes('nettsperre.admin')) {
-      sideMenuItems.push({
-        title: 'Admin',
-        href: '/admin',
-        icon: 'admin_panel_settings'
-      })
-    }
-    if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
-      sideMenuItems.push({
-        title: 'Brukeradmin',
-        href: '/bruker-admin',
-        icon: 'supervisor_account'
-      })
-    }
-  }
+	const getInitials = (name) => {
+		const firstInitial = name.substring(0, 1)
+		const nameList = name.split(" ")
+		if (nameList.length < 2) return firstInitial
+		const lastInitial = nameList[nameList.length - 1].substring(0, 1)
+		return `${firstInitial}.${lastInitial}`
+	}
+
+	$: sideMenuItems = [
+		{
+			title: "Hjem",
+			href: "/",
+			icon: "home"
+		},
+		{
+			title: "Sperringer",
+			href: "/sperringer",
+			icon: "gpp_bad"
+		},
+		{
+			title: "Historikk",
+			href: "/historikk",
+			icon: "history"
+		},
+		{
+			title: "Hjelp",
+			href: "/hjelp",
+			icon: "help"
+		}
+		// {
+		//   title: 'Admin',
+		//   href: '/admin',
+		//   icon: 'admin_panel_settings'
+		// },
+		// {
+		//   title: 'Bruker Admin',
+		//   href: '/bruker-admin',
+		//   icon: 'supervisor_account'
+		// }
+	]
+	const checkRoles = async (token) => {
+		if (token?.roles.includes("nettsperre.admin")) {
+			sideMenuItems.push({
+				title: "Admin",
+				href: "/admin",
+				icon: "admin_panel_settings"
+			})
+		}
+		if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
+			sideMenuItems.push({
+				title: "Brukeradmin",
+				href: "/bruker-admin",
+				icon: "supervisor_account"
+			})
+		}
+	}
 </script>
 
 
@@ -129,7 +128,7 @@
       <div class="loading">
         <IconSpinner width={"32px"} />
       </div>
-    {:then}
+    {:then _}
       {#if token.roles.length === 0}
         <div class="contentContainer">
           <h1>Hei, {token.name}!</h1>
@@ -197,9 +196,9 @@
   .contentContainer {
     padding: 1rem 4rem;
   }
-  .content {
-    margin: 0rem auto 0rem auto;
-  }
+  /*.content {
+    margin: 0 auto 0 auto;
+  }*/
   .layout {
     display: flex;
   }
@@ -208,7 +207,7 @@
     flex-direction: column;
     flex-shrink: 0;
     align-items: center;
-    padding: 1.5rem 0rem;
+    padding: 1.5rem 0;
     display: flex;
     height: 100%;
     background-color: var(--vann-30);
@@ -235,7 +234,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem 0rem;
+    padding: 1rem 0;
     cursor: pointer;
   }
   .menuItem span {
@@ -251,8 +250,8 @@
   .pageContent {
     flex-grow: 1;
     max-width: 80rem;
-    margin: 0rem auto;
-    padding: 0rem;
+    margin: 0 auto;
+    padding: 0;
   }
   .topbar {
     display: flex;
@@ -274,7 +273,7 @@
     .menubarMobile {
       z-index: 100;
       position: fixed;
-      bottom: 0rem;
+      bottom: 0;
       align-items: center;
       justify-content: space-between;
       display: flex;
@@ -296,14 +295,14 @@
       font-size: 1.5rem;
     }
     .topbar {
-      padding: 0rem 1rem;
+      padding: 0 1rem;
     }
     .contentContainer {
       padding: 1rem 1rem 5rem 1rem;
     }
-    .pathtracker {
+    /*.pathtracker {
       padding: 0.4rem 1rem;
-    }
+    }*/
     .userContainer .displayName {
       display: none;
     }
