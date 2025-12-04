@@ -1,1 +1,1 @@
-Her kommer en admin siden for testing og sånt
+Her kommer en adminside for testing og sånt

@@ -1,138 +1,139 @@
 <script>
-    import { onMount } from "svelte";
-    import { superUserImposter, teachersStore } from "../../lib/store"
-    import { get } from "svelte/store";
-    import IconSpinner from "../../lib/components/IconSpinner.svelte";
-    import { getNettsperreToken, getHistory, getGroupMembers } from "../../lib/useApi.js";
-    import { prettyPrintDate } from "../../lib/helpers/pretty-date"
-    import { schoolInfoTFK } from "../../lib/helpers/tfk-schools"
-    import { schoolInfoVFK } from "../../lib/helpers/vfk-schools"
-    import { syntaxHighlight } from "../../lib/helpers/highlight-json" 
-    import Searchfield from "../../lib/components/Searchfield.svelte"
+	import { onMount } from "svelte"
+	import { get } from "svelte/store"
+	import { syntaxHighlight } from "$lib/helpers/highlight-json.js"
+	import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
+	import { schoolInfoTFK } from "$lib/helpers/tfk-schools.js"
+	import { schoolInfoVFK } from "$lib/helpers/vfk-schools.js"
+	import { superUserImposter, teachersStore } from "$lib/store.js"
+	import { getGroupMembers, getHistory, getNettsperreToken } from "$lib/useApi.js"
+	import IconSpinner from "../../lib/components/IconSpinner.svelte"
+	import Searchfield from "../../lib/components/Searchfield.svelte"
 
-    let token
-    let showDetails = []
-    let hideMonthBlock = []
-    let history = []
-    let groupMembersArray
-    let schoolInfo = import.meta.env.VITE_COUNTY === 'Telemark' ? schoolInfoTFK : schoolInfoVFK
-    
-    let filterObj = {
-        teacher: undefined,
-        school: undefined,
-        class: undefined
-    }
+	let token
+	let showDetails = []
+	let hideMonthBlock = []
+	let history = []
+	let groupMembersArray
+	let schoolInfo = import.meta.env.VITE_COUNTY === "Telemark" ? schoolInfoTFK : schoolInfoVFK
 
-    $: imposting = ''
-    $: groupedHistory = []
-    $: showDetailsState = false
-    $: hideMonthState = false
-    $: detailsData = null
+	let filterObj = {
+		teacher: undefined,
+		school: undefined,
+		class: undefined
+	}
 
-    onMount( async () => {
-        token = await getNettsperreToken(true)
-        imposting = get(superUserImposter)
-    })
+	$: imposting = ""
+	$: groupedHistory = []
+	$: showDetailsState = false
+	$: hideMonthState = false
+	$: detailsData = null
 
-    const checkRoles = async (token) => {
-        if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
-            // Role not found in token roles array, error true
-            console.log('superuser')
-        }
-    }
+	onMount(async () => {
+		token = await getNettsperreToken(true)
+		imposting = get(superUserImposter)
+	})
 
-    const groupByMonth = async (blocks) => {
-        const grouped = {}
-        blocks.forEach(block => {
-            const year = block.startBlock.split('-')[0]
-            const month = block.startBlock.split('-')[1]
-            // If the month is not in the grouped object, add it
-            if (!grouped[month]) {
-                grouped[month] = { year: year, blocks: [] }
-            }
-            // If the block is from a previous year, replace the block
-            if (grouped[month].year < year) {
-                grouped[month] = { year: year, blocks: [block] }
-            }
-            // If the block is from the same year, add it to the array 
-            else if (grouped[month].year === year) {
-                grouped[month].blocks.push(block)
-            }
-        })
-        // Flatten the grouped object to only contain blocks
-        const flattenedGrouped = {}
-        Object.keys(grouped).forEach(month => {
-            flattenedGrouped[month] = grouped[month].blocks
-        })
-        return flattenedGrouped
-    }
+	const checkRoles = async (token) => {
+		if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
+			// Role not found in token roles array, error true
+			console.log("superuser")
+		}
+	}
 
-    // Function to get history data
-    const getHistoryData = async (token, filter) => {
-        groupedHistory = []
-        // Close all open month blocks
-        hideMonthBlock = []
-        // If the user is a superuser, get history for the selected teacher
-        if(token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
-            // If the filter object is not empty, get history for the selected teacher
-            if (filter !== undefined &&(filter?.teacher !== null || filter?.school !== null)) {
-                history = await getHistory(filter?.teacher.userPrincipalName, null, filter?.school.officeLocation)
-                groupedHistory = await groupByMonth(history.data || [])
-                return groupedHistory
-            } else { // If the filter object is empty, get history for the superuser
-                history = await getHistory(token.upn, null, null)
-                groupedHistory = await groupByMonth(history.data || [])
-                return groupedHistory
-            }
-        } else { // If the user is not a superuser, get history for the user
-            history = await getHistory(token.upn, null, null)
-            groupedHistory = await groupByMonth(history.data || [])
-            // Set a sleep to simulate a slow API
-            return groupedHistory
-        }
-    }
-    
-    
+	const groupByMonth = async (blocks) => {
+		const grouped = {}
+		blocks.forEach((block) => {
+			const year = block.startBlock.split("-")[0]
+			const month = block.startBlock.split("-")[1]
+			// If the month is not in the grouped object, add it
+			if (!grouped[month]) {
+				grouped[month] = { year: year, blocks: [] }
+			}
+			// If the block is from a previous year, replace the block
+			if (grouped[month].year < year) {
+				grouped[month] = { year: year, blocks: [block] }
+			}
+			// If the block is from the same year, add it to the array
+			else if (grouped[month].year === year) {
+				grouped[month].blocks.push(block)
+			}
+		})
+		// Flatten the grouped object to only contain blocks
+		const flattenedGrouped = {}
+		Object.keys(grouped).forEach((month) => {
+			flattenedGrouped[month] = grouped[month].blocks
+		})
+		return flattenedGrouped
+	}
 
-    // Function to show details div
-    const showDetailsDiv = (i, block) => {
-        // State for handling div visibility
-        showDetails[i] = !showDetails[i]
-        showDetailsState = !showDetailsState
-        // Clear the filter object
-        filterObj = {
-            teacher: undefined,
-            school: undefined,
-            class: undefined
-        }
-        detailsData = block
-    }
-    
-    // Function to reset the details state
-    const resetDetailsState = () => {
-        showDetailsState = !showDetailsState
-    }
+	// Function to get history data
+	const getHistoryData = async (token, filter) => {
+		groupedHistory = []
+		// Close all open month blocks
+		hideMonthBlock = []
+		// If the user is a superuser, get history for the selected teacher
+		if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
+			// If the filter object is not empty, get history for the selected teacher
+			if (filter !== undefined && (filter?.teacher !== null || filter?.school !== null)) {
+				history = await getHistory(filter?.teacher.userPrincipalName, null, filter?.school.officeLocation)
+				groupedHistory = await groupByMonth(history.data || [])
+				return groupedHistory
+			}
 
-    // Function to get teachers
-    const getTeachers = async () => {
-        try {
-            if(get(teachersStore).length === 0) {
-                const teachers = await getGroupMembers()
-                groupMembersArray = teachers.data
-                teachersStore.set(groupMembersArray)
-            } else {
-                groupMembersArray = get(teachersStore)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
+			// If the filter object is empty, get history for the superuser
+			history = await getHistory(token.upn, null, null)
+			groupedHistory = await groupByMonth(history.data || [])
+			return groupedHistory
+		}
 
-    // Function to hide and show month blocks
-    const hideMonth = (i) => {
-        hideMonthBlock[i] = !hideMonthBlock[i]
-        hideMonthState = !hideMonthState
-    }
+		// If the user is not a superuser, get history for the user
+		history = await getHistory(token.upn, null, null)
+		groupedHistory = await groupByMonth(history.data || [])
+		// Set a sleep to simulate a slow API
+		return groupedHistory
+	}
+
+	// Function to show details div
+	const showDetailsDiv = (i, block) => {
+		// State for handling div visibility
+		showDetails[i] = !showDetails[i]
+		showDetailsState = !showDetailsState
+		// Clear the filter object
+		filterObj = {
+			teacher: undefined,
+			school: undefined,
+			class: undefined
+		}
+		detailsData = block
+	}
+
+	// Function to reset the details state
+	const resetDetailsState = () => {
+		showDetailsState = !showDetailsState
+	}
+
+	// Function to get teachers
+	const getTeachers = async () => {
+		try {
+			if (get(teachersStore).length === 0) {
+				const teachers = await getGroupMembers()
+				groupMembersArray = teachers.data
+				teachersStore.set(groupMembersArray)
+				return
+			}
+
+			groupMembersArray = get(teachersStore)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	// Function to hide and show month blocks
+	const hideMonth = (i) => {
+		hideMonthBlock[i] = !hideMonthBlock[i]
+		hideMonthState = !hideMonthState
+	}
 </script>
 
 <main>
@@ -145,12 +146,12 @@
             <div class="center">
                 <IconSpinner />
             </div>
-        {:then} 
+        {:then _} 
             {#await getHistoryData(token)}
                 <div class="center">
                     <IconSpinner />
                 </div>
-            {:then}
+            {:then _}
                 {#if showDetailsState}
                     {#if token.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)}
                         <pre>{@html syntaxHighlight(JSON.stringify(detailsData, null, 2))}</pre>
@@ -169,7 +170,7 @@
                                 <div class="center">
                                     <h3>Henter lærere...</h3>
                                 </div>
-                            {:then}
+                            {:then _}
                                 <div class="superUserFilter">
                                     <div class="searchFields">
                                         <Searchfield placeHolder="Søk etter lærer" propToFilter="displayName" arrayData={get(teachersStore)} bind:selectedObj={filterObj.teacher}></Searchfield>
@@ -210,7 +211,7 @@
                             <p>Ingen historikk funnet for bruker: <strong>{filterObj.teacher?.userPrincipalName ? filterObj.teacher.userPrincipalName : token.upn}</strong></p>
                         {:else}
                             <!-- 
-                                Sorted to show newset to oldest block. Had to sort here because the Object.entries messed with the order when a 0 was in front.
+                                Sorted to show newest to oldest block. Had to sort here because the Object.entries messed with the order when a 0 was in front.
                                 09, 10, 11 turned into 10, 11, 09. Sorting b - a to get newest first. a-b would give oldest first.
                             -->
                             {#each Object.entries(groupedHistory).sort(([a], [b]) => b - a) as [month, blocks], i} 
@@ -294,11 +295,11 @@
         padding: 0.5rem;
     }
 
-    .selectedFilters {
+    /*.selectedFilters {
         padding: 0.5rem;
         border: 1px solid #ccc;
         margin: 0.5rem;
-    }
+    }*/
 
     .blockRow {
 		display: flex;
@@ -307,7 +308,7 @@
 		gap: 0.5rem;
 	}
 	.blockRow.header {
-		padding: 1rem 2rem 0rem 2rem;
+		padding: 1rem 2rem 0 2rem;
 	}
     .center {
         display: flex;
