@@ -291,7 +291,7 @@
                             {#if import.meta.env.VITE_DISABLE_EKSAMEN !== 'true'}
                                 <div>
                                     <input type="radio" disabled={processing ? processing : processing} id="radio1" name="radioGroup" value="Eksamensmodus">
-                                    <label for="radio1">Eksamen med eksamenshjelpemidler</label>
+                                    <label for="radio1">Sikker nettleser med hjelpemidler (Word, Lingdys, Ordbok/Ordbanken, Clarify, NDLA m.m.)</label>
                                 </div>
                             {/if}
                             <!-- <input type="radio" id="radio2" name="radioGroup" value="option2">
@@ -310,8 +310,10 @@
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
                                 <div>
-                                    <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
-                                    <label for="radio5">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
+                                    <input type="radio" disabled={true} id="radio5" name="radioGroup" value="">
+                                    <label for="radio5" value="">❗Prøve i Forms med filopplastning og med eksamenshjelpemidler er midlertidig deaktivert❗</label>
+                                    <!-- <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile"> -->
+                                    <!-- <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label> -->
                                 </div>
                             {/if}
                             <div>

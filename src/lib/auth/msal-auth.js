@@ -1,4 +1,4 @@
-import { PublicClientApplication } from "@azure/msal-browser"
+import { createStandardPublicClientApplication } from "@azure/msal-browser"
 
 /**
  * @type {import('@azure/msal-browser').Configuration}
@@ -7,12 +7,10 @@ const msalConfig = {
 	auth: {
 		clientId: import.meta.env.VITE_CLIENT_ID ?? "klientID",
 		authority: import.meta.env.VITE_CLIENT_ISS ?? "autiruireuir",
-		redirectUri: import.meta.env.VITE_REDIRECT_URI ?? "uriSomewhere",
-		navigateToLoginRequestUrl: false // Vi redirecter selv etter successful login - MSAL klarer det særdeles dårlig...
+		redirectUri: import.meta.env.VITE_REDIRECT_URI ?? "uriSomewhere"
 	},
 	cache: {
-		cacheLocation: "sessionStorage", // This configures where your cache will be stored
-		storeAuthStateInCookie: false // Set this to "true" if you are having issues on IE11 or Edge
+		cacheLocation: "sessionStorage" // This configures where your cache will be stored
 	}
 }
 
@@ -20,10 +18,10 @@ let msalClient = null // Vi prøver å beholde den i minne for moro skyld, slik 
 
 /**
  *
- * @returns {import('@azure/msal-browser').PublicClientApplication} msalClient
+ * @returns {Promise<import('@azure/msal-browser').IPublicClientApplication>} msalClient
  */
 export const getMsalClient = async () => {
-	if (!msalClient) msalClient = await PublicClientApplication.createPublicClientApplication(msalConfig)
+	if (!msalClient) msalClient = await createStandardPublicClientApplication(msalConfig)
 	if (msalClient.getActiveAccount()) return msalClient
 	const accounts = msalClient.getAllAccounts()
 	if (accounts.length === 1) {
@@ -52,7 +50,7 @@ export const login = async (forceLogin = false, loginRequestUrl = "/") => {
 	if (import.meta.env.VITE_MOCK_MSAL === "true") return { account: { username: "demospøkelse@domene.no", name: "Demo Spøkelse" }, loginRequestUrl }
 	const msalClient = await getMsalClient()
 
-	const loginResponse = await msalClient.handleRedirectPromise()
+	const loginResponse = await msalClient.handleRedirectPromise({ navigateToLoginRequestUrl: false }) // Vi redirecter selv etter successful login - MSAL klarer det særdeles dårlig...
 
 	if (loginResponse && !forceLogin) {
 		msalClient.setActiveAccount(loginResponse.account)
