@@ -310,10 +310,13 @@
                             {/if}
                             {#if import.meta.env.VITE_DISABLE_FORMS_FILE !== 'true'}
                                 <div>
+                                  {#if import.meta.env.VITE_COUNTY === "Telemark"}
                                     <input type="radio" disabled={true} id="radio5" name="radioGroup" value="">
                                     <label for="radio5" value="">❗Prøve i Forms med filopplastning og med eksamenshjelpemidler er midlertidig deaktivert❗</label>
-                                    <!-- <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile"> -->
-                                    <!-- <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label> -->
+                                  {:else}
+                                    <input type="radio" disabled={processing ? processing : processing} id="radio5" name="radioGroup" value="formsFile">
+                                    <label for="radio5" value="">{import.meta.env.VITE_FORMSFILE_OPTION_TEXT}</label>
+                                  {/if}
                                 </div>
                             {/if}
                             <div>
