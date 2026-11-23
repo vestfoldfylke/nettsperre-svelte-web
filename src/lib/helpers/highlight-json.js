@@ -16,7 +16,7 @@ export const syntaxHighlight = (json) => {
   const _null = "color:magenta"
   const _key = "color:red"
 
-  json = json.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">")
+  json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, (match) => {
     let cls = _number
     if (/^"/.test(match)) {

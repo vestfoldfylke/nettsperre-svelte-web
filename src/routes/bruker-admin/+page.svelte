@@ -50,20 +50,10 @@
     teachers = groupMembersArray.filter(filterFunc)
   }
 
-  const generateGUID = () => {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      // Replace x or y with random hex digit
-      let r = (Math.random() * 16) | 0,
-        v = c === "x" ? r : (r & 0x3) | 0x8
-      // Return the random guid like string
-      return v.toString(16)
-    })
-  }
-
   const setAdmin = async (requestor, teacher) => {
     processing = true
     // Create a random session id (guid) for the user
-    const sessionId = generateGUID()
+    const sessionId = crypto.randomUUID()
     superUserImposterSessionID.set(sessionId)
     const permission = await validatePermission(requestor, teacher.userPrincipalName, sessionId)
 
