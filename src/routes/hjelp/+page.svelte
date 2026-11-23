@@ -1,7 +1,7 @@
 <script>
-	const county = import.meta.env.VITE_COUNTY
+  const county = import.meta.env.VITE_COUNTY
 
-	const digitalExamUrl = county === "Telemark" ? "https://eksamen.telemarkfylke.no/elev" : "https://eksamen.vestfoldfylke.no/elev"
+  const digitalExamUrl = county === "Telemark" ? "https://eksamen.telemarkfylke.no/elev" : "https://eksamen.vestfoldfylke.no/elev"
 </script>
 
 <main>

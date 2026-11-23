@@ -1,258 +1,258 @@
 <script>
-	import { onMount } from "svelte"
-	import { get } from "svelte/store"
-	import { goto } from "$app/navigation"
-	import { prettyPrintBlock } from "$lib/helpers/pretty-block-type.js"
-	import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
-	import { prettyPrintStatus } from "$lib/helpers/pretty-status.js"
-	import { superUserImposter } from "$lib/store.js"
-	import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "$lib/useApi.js"
-	import IconSpinner from "../../lib/components/IconSpinner.svelte"
-	import Modal from "../../lib/components/Modal.svelte"
+  import { onMount } from "svelte"
+  import { get } from "svelte/store"
+  import { goto } from "$app/navigation"
+  import { prettyPrintBlock } from "$lib/helpers/pretty-block-type.js"
+  import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
+  import { prettyPrintStatus } from "$lib/helpers/pretty-status.js"
+  import { superUserImposter } from "$lib/store.js"
+  import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "$lib/useApi.js"
+  import IconSpinner from "../../lib/components/IconSpinner.svelte"
+  import Modal from "../../lib/components/Modal.svelte"
 
-	let token
-	let showActive = false
-	let showPending = false
-	let showSchool = false
-	let showDetails = []
-	let blockedStudents = []
-	let allStudents = []
-	let studentsToShow = []
-	$: detailsData = null
-	$: blockResponse = null
-	$: showDetailsState = false
-	$: editBlockType = false
-	$: editBlockDate = false
-	$: editBlockStudents = false
-	$: processing = false
-	$: showModal = false
-	$: isDeleteBlock = false
-	$: imposting = ""
+  let token
+  let showActive = false
+  let showPending = false
+  let showSchool = false
+  let showDetails = []
+  let blockedStudents = []
+  let allStudents = []
+  let studentsToShow = []
+  $: detailsData = null
+  $: blockResponse = null
+  $: showDetailsState = false
+  $: editBlockType = false
+  $: editBlockDate = false
+  $: editBlockStudents = false
+  $: processing = false
+  $: showModal = false
+  $: isDeleteBlock = false
+  $: imposting = ""
 
-	onMount(async () => {
-		token = await getNettsperreToken(true)
-		imposting = get(superUserImposter)
-	})
+  onMount(async () => {
+    token = await getNettsperreToken(true)
+    imposting = get(superUserImposter)
+  })
 
-	const getBlocksData = async (status, upn, school) => {
-		return await getBlocks(status, upn, school)
-	}
+  const getBlocksData = async (status, upn, school) => {
+    return await getBlocks(status, upn, school)
+  }
 
-	const showActiveBlocks = () => {
-		showActive = !showActive
-	}
+  const showActiveBlocks = () => {
+    showActive = !showActive
+  }
 
-	const showPendingBlocks = () => {
-		showPending = !showPending
-	}
+  const showPendingBlocks = () => {
+    showPending = !showPending
+  }
 
-	const showSchoolBlocks = () => {
-		showSchool = !showSchool
-	}
+  const showSchoolBlocks = () => {
+    showSchool = !showSchool
+  }
 
-	const showDetailsDiv = (i, block) => {
-		// State for handling div visibility
-		showDetails[i] = !showDetails[i]
-		showDetailsState = !showDetailsState
-		detailsData = block
-	}
+  const showDetailsDiv = (i, block) => {
+    // State for handling div visibility
+    showDetails[i] = !showDetails[i]
+    showDetailsState = !showDetailsState
+    detailsData = block
+  }
 
-	const resetDetailsState = () => {
-		showDetailsState = !showDetailsState
-	}
+  const resetDetailsState = () => {
+    showDetailsState = !showDetailsState
+  }
 
-	const editField = (field) => {
-		if (field === "date") {
-			editBlockDate = !editBlockDate
-		}
-		if (field === "blockType") {
-			editBlockType = !editBlockType
-		}
-		if (field === "students") {
-			editBlockStudents = !editBlockStudents
-		}
-	}
+  const editField = (field) => {
+    if (field === "date") {
+      editBlockDate = !editBlockDate
+    }
+    if (field === "blockType") {
+      editBlockType = !editBlockType
+    }
+    if (field === "students") {
+      editBlockStudents = !editBlockStudents
+    }
+  }
 
-	const saveChanges = async (detailsData) => {
-		const updatedObj = {
-			updatedBy: {
-				displayName: token.name,
-				teacherId: token.oid,
-				userPrincipalName: token.upn
-			},
-			updatedTimeStamp: new Date().toISOString(),
-			studentsToRemove: [],
-			studentsToAdd: [],
-			typeBlockChange: {},
-			dateBlockChange: {
-				start: {},
-				end: {}
-			}
-		}
+  const saveChanges = async (detailsData) => {
+    const updatedObj = {
+      updatedBy: {
+        displayName: token.name,
+        teacherId: token.oid,
+        userPrincipalName: token.upn
+      },
+      updatedTimeStamp: new Date().toISOString(),
+      studentsToRemove: [],
+      studentsToAdd: [],
+      typeBlockChange: {},
+      dateBlockChange: {
+        start: {},
+        end: {}
+      }
+    }
 
-		// Changes made to the data
-		if (document.querySelectorAll('input[name="selectedStudents"]:checked').length > 0) {
-			document.querySelectorAll('input[name="selectedStudents"]:checked').forEach((e) => {
-				// If the student is already in the list of students blocked, add them to the list of students to remove.
-				const studentsSelected = JSON.parse(e.value)
-				for (const blocked of detailsData.students) {
-					if (studentsSelected.id === blocked.id) {
-						updatedObj.studentsToRemove.push(studentsSelected)
-					}
-				}
-				// Only add students to the list of students to add if the status of the block is pending. Cannot add new students to an active block!
-				if (detailsData.status === "pending") {
-					// Check if the student from studentSelected is not in the list of students already blocked.
-					// If they are not, add them to the list of students to add.
-					if (!detailsData.students.some((student) => student.id === studentsSelected.id)) {
-						updatedObj.studentsToAdd.push(studentsSelected)
-					}
-				}
-			})
-		}
-		// User should only be able to change the type of the block & startTime if the status is pending.
-		if (detailsData.status === "pending") {
-			if (document.querySelector('input[name="radioGroup"]:checked').value === "Eksamensmodus") {
-				if (detailsData.typeBlock.type === "eksamen") {
-					// Do nothing
-				} else {
-					// Add change to updated object
-					updatedObj.typeBlockChange = {
-						oldType: detailsData.typeBlock.type,
-						newType: "eksamen"
-					}
-					// Change type to eksamen
-					detailsData.typeBlock.type = "eksamen"
-				}
-			} else if (document.querySelector('input[name="radioGroup"]:checked').value === "fullBlock") {
-				if (detailsData.typeBlock.type === "fullBlock") {
-					// Do nothing
-				} else {
-					// Add change to updated object
-					updatedObj.typeBlockChange = {
-						oldType: detailsData.typeBlock.type,
-						newType: "fullBlock"
-					}
-					// Change type to fullBlock
-					detailsData.typeBlock.type = "fullBlock"
-				}
-			} else if (document.querySelector('input[name="radioGroup"]:checked').value === "formsFile") {
-				if (detailsData.typeBlock.type === "formsFile") {
-					// Do nothing
-				} else {
-					// Add change to updated object
-					updatedObj.typeBlockChange = {
-						oldType: detailsData.typeBlock.type,
-						newType: "formsFile"
-					}
-					// Change type to formsFile
-					detailsData.typeBlock.type = "formsFile"
-				}
-			} else if (document.querySelector('input[name="radioGroup"]:checked').value === "forms") {
-				if (detailsData.typeBlock.type === "forms") {
-					// Do nothing
-				} else {
-					// Add change to updated object
-					updatedObj.typeBlockChange = {
-						oldType: detailsData.typeBlock.type,
-						newType: "forms"
-					}
-					// Change type to forms
-					detailsData.typeBlock.type = "forms"
-				}
-			}
-			// Check if the startTime has been changed
-			if (document.getElementById("startTime").value !== detailsData.startBlock) {
-				updatedObj.dateBlockChange.start = {
-					old: detailsData.startBlock,
-					new: document.getElementById("startTime").value
-				}
-			}
-		}
-		// Check if the endTime has been changed
-		if (document.getElementById("endTime").value !== detailsData.endBlock) {
-			updatedObj.dateBlockChange.end = {
-				old: detailsData.endBlock,
-				new: document.getElementById("endTime").value
-			}
-		}
-		await detailsData.updated.push(updatedObj)
-		// Post the block to the API
-		try {
-			processing = true
-			blockResponse = await putBlock(detailsData)
-			processing = false
-		} catch (error) {
-			blockResponse = error
-		}
-	}
+    // Changes made to the data
+    if (document.querySelectorAll('input[name="selectedStudents"]:checked').length > 0) {
+      document.querySelectorAll('input[name="selectedStudents"]:checked').forEach((e) => {
+        // If the student is already in the list of students blocked, add them to the list of students to remove.
+        const studentsSelected = JSON.parse(e.value)
+        for (const blocked of detailsData.students) {
+          if (studentsSelected.id === blocked.id) {
+            updatedObj.studentsToRemove.push(studentsSelected)
+          }
+        }
+        // Only add students to the list of students to add if the status of the block is pending. Cannot add new students to an active block!
+        if (detailsData.status === "pending") {
+          // Check if the student from studentSelected is not in the list of students already blocked.
+          // If they are not, add them to the list of students to add.
+          if (!detailsData.students.some((student) => student.id === studentsSelected.id)) {
+            updatedObj.studentsToAdd.push(studentsSelected)
+          }
+        }
+      })
+    }
+    // User should only be able to change the type of the block & startTime if the status is pending.
+    if (detailsData.status === "pending") {
+      if (document.querySelector('input[name="radioGroup"]:checked').value === "Eksamensmodus") {
+        if (detailsData.typeBlock.type === "eksamen") {
+          // Do nothing
+        } else {
+          // Add change to updated object
+          updatedObj.typeBlockChange = {
+            oldType: detailsData.typeBlock.type,
+            newType: "eksamen"
+          }
+          // Change type to eksamen
+          detailsData.typeBlock.type = "eksamen"
+        }
+      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "fullBlock") {
+        if (detailsData.typeBlock.type === "fullBlock") {
+          // Do nothing
+        } else {
+          // Add change to updated object
+          updatedObj.typeBlockChange = {
+            oldType: detailsData.typeBlock.type,
+            newType: "fullBlock"
+          }
+          // Change type to fullBlock
+          detailsData.typeBlock.type = "fullBlock"
+        }
+      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "formsFile") {
+        if (detailsData.typeBlock.type === "formsFile") {
+          // Do nothing
+        } else {
+          // Add change to updated object
+          updatedObj.typeBlockChange = {
+            oldType: detailsData.typeBlock.type,
+            newType: "formsFile"
+          }
+          // Change type to formsFile
+          detailsData.typeBlock.type = "formsFile"
+        }
+      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "forms") {
+        if (detailsData.typeBlock.type === "forms") {
+          // Do nothing
+        } else {
+          // Add change to updated object
+          updatedObj.typeBlockChange = {
+            oldType: detailsData.typeBlock.type,
+            newType: "forms"
+          }
+          // Change type to forms
+          detailsData.typeBlock.type = "forms"
+        }
+      }
+      // Check if the startTime has been changed
+      if (document.getElementById("startTime").value !== detailsData.startBlock) {
+        updatedObj.dateBlockChange.start = {
+          old: detailsData.startBlock,
+          new: document.getElementById("startTime").value
+        }
+      }
+    }
+    // Check if the endTime has been changed
+    if (document.getElementById("endTime").value !== detailsData.endBlock) {
+      updatedObj.dateBlockChange.end = {
+        old: detailsData.endBlock,
+        new: document.getElementById("endTime").value
+      }
+    }
+    await detailsData.updated.push(updatedObj)
+    // Post the block to the API
+    try {
+      processing = true
+      blockResponse = await putBlock(detailsData)
+      processing = false
+    } catch (error) {
+      blockResponse = error
+    }
+  }
 
-	const studentsInBlock = async (detailsData) => {
-		blockedStudents = []
-		allStudents = []
-		const studentsInClass = await getStudents(detailsData.blockedGroup.id)
-		for (const student of studentsInClass.data) {
-			for (const blockedStudent of detailsData.students) {
-				if (student.id === blockedStudent.id) {
-					blockedStudents.push(blockedStudent)
-				}
-			}
-		}
-		// Remove the students that are already in the block from the list of all students.
-		allStudents = studentsInClass.data.filter((student) => !detailsData.students.some((blockedStudent) => blockedStudent.id === student.id))
-	}
+  const studentsInBlock = async (detailsData) => {
+    blockedStudents = []
+    allStudents = []
+    const studentsInClass = await getStudents(detailsData.blockedGroup.id)
+    for (const student of studentsInClass.data) {
+      for (const blockedStudent of detailsData.students) {
+        if (student.id === blockedStudent.id) {
+          blockedStudents.push(blockedStudent)
+        }
+      }
+    }
+    // Remove the students that are already in the block from the list of all students.
+    allStudents = studentsInClass.data.filter((student) => !detailsData.students.some((blockedStudent) => blockedStudent.id === student.id))
+  }
 
-	/**
-	 * Delete the block from the API
-	 * @param block - The block to delete
-	 * @param action - The action to perform on the block. [delete, deactivate]
-	 */
-	const postDeleteBlock = async (block, action) => {
-		// Delete the block from the API
-		if (confirm(`Er du sikker på at du vil ${action === "delete" ? "slette" : "deaktivere"} denne sperringen?`)) {
-			try {
-				isDeleteBlock = true
-				processing = true
-				blockResponse = await deleteBlock(block, action)
-				processing = false
-			} catch (error) {
-				blockResponse = error
-			}
-		}
-	}
+  /**
+   * Delete the block from the API
+   * @param block - The block to delete
+   * @param action - The action to perform on the block. [delete, deactivate]
+   */
+  const postDeleteBlock = async (block, action) => {
+    // Delete the block from the API
+    if (confirm(`Er du sikker på at du vil ${action === "delete" ? "slette" : "deaktivere"} denne sperringen?`)) {
+      try {
+        isDeleteBlock = true
+        processing = true
+        blockResponse = await deleteBlock(block, action)
+        processing = false
+      } catch (error) {
+        blockResponse = error
+      }
+    }
+  }
 
-	const reloadPage = () => {
-		// Reset states
-		blockResponse = null
-		showDetailsState = false
-		editBlockType = false
-		editBlockDate = false
-		editBlockStudents = false
-		showActive = false
-		showPending = false
-		showSchool = false
-		showDetails = []
-		blockedStudents = []
-		allStudents = []
+  const reloadPage = () => {
+    // Reset states
+    blockResponse = null
+    showDetailsState = false
+    editBlockType = false
+    editBlockDate = false
+    editBlockStudents = false
+    showActive = false
+    showPending = false
+    showSchool = false
+    showDetails = []
+    blockedStudents = []
+    allStudents = []
 
-		const thisPage = window.location.pathname
+    const thisPage = window.location.pathname
 
-		goto("/sperringer").then(() => goto(thisPage))
-	}
-	// Sort by date, and show only the blocks that are 7 days ahead of today.
-	const sortByDate = (blocks) => {
-		const today = new Date()
-		const sevenDaysAhead = new Date(today.setDate(today.getDate() + 7))
-		return blocks.filter((block) => new Date(block.startBlock) < sevenDaysAhead)
-	}
+    goto("/sperringer").then(() => goto(thisPage))
+  }
+  // Sort by date, and show only the blocks that are 7 days ahead of today.
+  const sortByDate = (blocks) => {
+    const today = new Date()
+    const sevenDaysAhead = new Date(today.setDate(today.getDate() + 7))
+    return blocks.filter((block) => new Date(block.startBlock) < sevenDaysAhead)
+  }
 
-	const showStudents = (block) => {
-		// Disable scrolling when modal is open
-		document.body.style.overflow = "hidden"
-		document.body.style.height = "100%"
-		showModal = true
-		studentsToShow = block.students
-	}
+  const showStudents = (block) => {
+    // Disable scrolling when modal is open
+    document.body.style.overflow = "hidden"
+    document.body.style.height = "100%"
+    showModal = true
+    studentsToShow = block.students
+  }
 </script>
 
 <main>

@@ -1,112 +1,112 @@
 <script>
-	import "../app.css"
-	import { onMount } from "svelte"
-	import { goto } from "$app/navigation"
-	import { page } from "$app/stores"
-	import favTFK from "$lib/assets/favicon-32x32.png"
-	import logoTFK from "$lib/assets/logo.svg"
-	import logoVFK from "$lib/assets/VFK_logo.svg"
-	import favVFK from "$lib/assets/vestfold-favicon-32x32.png"
-	import { getMsalClient, login } from "../lib/auth/msal-auth.js"
-	import IconSpinner from "../lib/components/IconSpinner.svelte"
-	import { getNettsperreToken } from "../lib/useApi.js"
+  import "../app.css"
+  import { onMount } from "svelte"
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
+  import favTFK from "$lib/assets/favicon-32x32.png"
+  import logoTFK from "$lib/assets/logo.svg"
+  import logoVFK from "$lib/assets/VFK_logo.svg"
+  import favVFK from "$lib/assets/vestfold-favicon-32x32.png"
+  import { getMsalClient, login } from "../lib/auth/msal-auth.js"
+  import IconSpinner from "../lib/components/IconSpinner.svelte"
+  import { getNettsperreToken } from "../lib/useApi.js"
 
-	let account = null
+  let account = null
 
-	onMount(async () => {
-		const authenticate = async () => {
-			const msalClient = await getMsalClient()
-			if (msalClient.getActiveAccount()) {
-				account = msalClient.getActiveAccount()
-				// console.log('Active account:', account)
-			}
-			if (!account) {
-				const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
-				account = loginResponse.account
-				if ($page.url.pathname !== loginResponse.loginRequestUrl) {
-					goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
-				}
-			}
-		}
-		authenticate()
-		return () => {
-			// console.log('Destroy')
-			// on destroy (probably just wipe state)
-		}
-	})
+  onMount(async () => {
+    const authenticate = async () => {
+      const msalClient = await getMsalClient()
+      if (msalClient.getActiveAccount()) {
+        account = msalClient.getActiveAccount()
+        // console.log('Active account:', account)
+      }
+      if (!account) {
+        const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+        account = loginResponse.account
+        if ($page.url.pathname !== loginResponse.loginRequestUrl) {
+          goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
+        }
+      }
+    }
+    authenticate()
+    return () => {
+      // console.log('Destroy')
+      // on destroy (probably just wipe state)
+    }
+  })
 
-	const appTitle = "Nettsperre"
-	let logo = ""
-	let iconPath = ""
-	if (import.meta.env.VITE_COUNTY === "Telemark") {
-		logo = logoTFK
-		iconPath = favTFK
-	} else {
-		logo = logoVFK
-		iconPath = favVFK
-	}
+  const appTitle = "Nettsperre"
+  let logo = ""
+  let iconPath = ""
+  if (import.meta.env.VITE_COUNTY === "Telemark") {
+    logo = logoTFK
+    iconPath = favTFK
+  } else {
+    logo = logoVFK
+    iconPath = favVFK
+  }
 
-	const isActiveRoute = (route, currentRoute) => {
-		if (currentRoute === route) return true
-		return route.length > 1 && currentRoute.substring(0, route.length) === route
-	}
+  const isActiveRoute = (route, currentRoute) => {
+    if (currentRoute === route) return true
+    return route.length > 1 && currentRoute.substring(0, route.length) === route
+  }
 
-	const getInitials = (name) => {
-		const firstInitial = name.substring(0, 1)
-		const nameList = name.split(" ")
-		if (nameList.length < 2) return firstInitial
-		const lastInitial = nameList[nameList.length - 1].substring(0, 1)
-		return `${firstInitial}.${lastInitial}`
-	}
+  const getInitials = (name) => {
+    const firstInitial = name.substring(0, 1)
+    const nameList = name.split(" ")
+    if (nameList.length < 2) return firstInitial
+    const lastInitial = nameList[nameList.length - 1].substring(0, 1)
+    return `${firstInitial}.${lastInitial}`
+  }
 
-	$: sideMenuItems = [
-		{
-			title: "Hjem",
-			href: "/",
-			icon: "home"
-		},
-		{
-			title: "Sperringer",
-			href: "/sperringer",
-			icon: "gpp_bad"
-		},
-		{
-			title: "Historikk",
-			href: "/historikk",
-			icon: "history"
-		},
-		{
-			title: "Hjelp",
-			href: "/hjelp",
-			icon: "help"
-		}
-		// {
-		//   title: 'Admin',
-		//   href: '/admin',
-		//   icon: 'admin_panel_settings'
-		// },
-		// {
-		//   title: 'Bruker Admin',
-		//   href: '/bruker-admin',
-		//   icon: 'supervisor_account'
-		// }
-	]
-	const checkRoles = async (token) => {
-		if (token?.roles.includes("nettsperre.admin")) {
-			sideMenuItems.push({
-				title: "Admin",
-				href: "/admin",
-				icon: "admin_panel_settings"
-			})
-		}
-		if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
-			sideMenuItems.push({
-				title: "Brukeradmin",
-				href: "/bruker-admin",
-				icon: "supervisor_account"
-			})
-		}
-	}
+  $: sideMenuItems = [
+    {
+      title: "Hjem",
+      href: "/",
+      icon: "home"
+    },
+    {
+      title: "Sperringer",
+      href: "/sperringer",
+      icon: "gpp_bad"
+    },
+    {
+      title: "Historikk",
+      href: "/historikk",
+      icon: "history"
+    },
+    {
+      title: "Hjelp",
+      href: "/hjelp",
+      icon: "help"
+    }
+    // {
+    //   title: 'Admin',
+    //   href: '/admin',
+    //   icon: 'admin_panel_settings'
+    // },
+    // {
+    //   title: 'Bruker Admin',
+    //   href: '/bruker-admin',
+    //   icon: 'supervisor_account'
+    // }
+  ]
+  const checkRoles = async (token) => {
+    if (token?.roles.includes("nettsperre.admin")) {
+      sideMenuItems.push({
+        title: "Admin",
+        href: "/admin",
+        icon: "admin_panel_settings"
+      })
+    }
+    if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
+      sideMenuItems.push({
+        title: "Brukeradmin",
+        href: "/bruker-admin",
+        icon: "supervisor_account"
+      })
+    }
+  }
 </script>
 
 

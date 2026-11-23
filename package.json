@@ -1,29 +1,29 @@
 {
-	"name": "nettsperre-svelte-web",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"test": "biome check",
-		"lint:fix": "biome check --write"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.6.3",
-		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/vite-plugin-svelte": "^7.3.1",
-		"svelte": "^5.57.3",
-		"vite": "^8.3.5"
-	},
-	"type": "module",
-	"dependencies": {
-		"@azure/msal-browser": "^5.27.0",
-		"@vtfk/logger": "^6.4.2",
-		"axios": "^1.21.0",
-		"jwt-decode": "^4.0.0",
-		"node-cache": "^5.1.2",
-		"node-schedule": "^2.1.2"
-	}
+  "name": "nettsperre-svelte-web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "biome check",
+    "lint:fix": "biome check --write --max-diagnostics 10000"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "@sveltejs/adapter-auto": "^7.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.3",
+    "vite": "^8.3.5"
+  },
+  "type": "module",
+  "dependencies": {
+    "@azure/msal-browser": "^5.27.0",
+    "@vtfk/logger": "^6.4.2",
+    "axios": "^1.21.0",
+    "jwt-decode": "^4.0.0",
+    "node-cache": "^5.1.2",
+    "node-schedule": "^2.1.2"
+  }
 }
