@@ -1,6 +1,6 @@
-import axios from "axios"
 import { jwtDecode } from "jwt-decode"
-import { getMsalClient, login } from "./auth/msal-auth"
+import { apiRequest } from "./api-request.js"
+import { getMsalClient, login } from "./auth/msal-auth.js"
 
 const apiUrl = import.meta.env.VITE_NETTSPERRE_API_URL
 
@@ -55,11 +55,7 @@ export const getNettsperreToken = async (decoded = false) => {
  */
 export const getClasses = async (upn) => {
   const token = await getNettsperreToken()
-  return await axios.get(`${apiUrl}/getOwnedGroups/${upn}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  return await apiRequest("GET", `${apiUrl}/getOwnedGroups/${upn}`, token)
 }
 
 /**
@@ -69,11 +65,7 @@ export const getClasses = async (upn) => {
  */
 export const getStudents = async (classId) => {
   const token = await getNettsperreToken()
-  return await axios.get(`${apiUrl}/getGroupMembers/${classId}/${import.meta.env.VITE_RETURN_ONLY_STUDENTS}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  return await apiRequest("GET", `${apiUrl}/getGroupMembers/${classId}/${import.meta.env.VITE_RETURN_ONLY_STUDENTS}`, token)
 }
 
 /**
@@ -82,11 +74,7 @@ export const getStudents = async (classId) => {
  */
 export const getGroupMembers = async () => {
   const token = await getNettsperreToken()
-  return await axios.get(`${apiUrl}/getGroupMembers/${import.meta.env.VITE_SEARCH_GROUP}/false`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  return await apiRequest("GET", `${apiUrl}/getGroupMembers/${import.meta.env.VITE_SEARCH_GROUP}/false`, token)
 }
 
 /**
@@ -97,11 +85,7 @@ export const getGroupMembers = async () => {
 export const postBlock = async (block) => {
   const token = await getNettsperreToken()
   try {
-    const response = await axios.post(`${apiUrl}/submitBlock`, block, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const response = await apiRequest("POST", `${apiUrl}/submitBlock`, token, block)
     if (response.status !== 201) {
       return { error: response.data }
     }
@@ -119,11 +103,7 @@ export const postBlock = async (block) => {
 export const putBlock = async (block) => {
   const token = await getNettsperreToken()
   try {
-    const response = await axios.put(`${apiUrl}/updateBlock`, block, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const response = await apiRequest("PUT", `${apiUrl}/updateBlock`, token, block)
     if (response.status !== 200) {
       return { error: response.data }
     }
@@ -156,11 +136,7 @@ export const getBlocks = async (status, upn, school) => {
     return { error: "Invalid status" }
   }
 
-  return await axios.get(`${apiUrl}/getBlocks/${status}/${upn}/${school}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  return await apiRequest("GET", `${apiUrl}/getBlocks/${status}/${upn}/${school}`, token)
 }
 
 /**
@@ -172,11 +148,7 @@ export const getBlocks = async (status, upn, school) => {
 export const deleteBlock = async (block, action) => {
   const token = await getNettsperreToken()
   try {
-    const response = await axios.post(`${apiUrl}/deleteBlock/${block._id}/${action}`, block, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const response = await apiRequest("POST", `${apiUrl}/deleteBlock/${block._id}/${action}`, token, block)
     if (response.status !== 200) {
       return { error: response.data }
     }
@@ -198,15 +170,7 @@ export const validatePermission = async (requestor, teacher, sessionId) => {
   if (!sessionId) return { error: "No sessionId provided" }
   const token = await getNettsperreToken()
   try {
-    return await axios.post(
-      `${apiUrl}/validatePermission`,
-      { requestorUPN: requestor, teacherToBeEditedUPN: teacher, sessionId: sessionId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
+    return await apiRequest("POST", `${apiUrl}/validatePermission`, token, { requestorUPN: requestor, teacherToBeEditedUPN: teacher, sessionId: sessionId })
   } catch (error) {
     return error
   }
@@ -223,11 +187,7 @@ export const getExtendedUserInfo = async (upn) => {
   if (!upn) return { error: "No upn provided" }
   const token = await getNettsperreToken()
   try {
-    return await axios.get(`${apiUrl}/extendedUserInfo/${upn}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    return await apiRequest("GET", `${apiUrl}/extendedUserInfo/${upn}`, token)
   } catch (error) {
     return error
   }
@@ -252,11 +212,7 @@ export const getHistory = async (teacher, course, school) => {
   // Build the query string
   const query = `${teacher || "null"}/${course || "null"}/${school || "null"}`
   try {
-    return await axios.get(`${apiUrl}/history/${query}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    return await apiRequest("GET", `${apiUrl}/history/${query}`, token)
   } catch (error) {
     return error
   }
