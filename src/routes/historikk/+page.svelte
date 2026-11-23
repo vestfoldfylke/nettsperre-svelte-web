@@ -1,14 +1,14 @@
 <script>
   import { onMount } from "svelte"
   import { get } from "svelte/store"
-  import { syntaxHighlight } from "$lib/helpers/highlight-json.js"
-  import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
-  import { schoolInfoTFK } from "$lib/helpers/tfk-schools.js"
-  import { schoolInfoVFK } from "$lib/helpers/vfk-schools.js"
-  import { superUserImposter, teachersStore } from "$lib/store.js"
-  import { getGroupMembers, getHistory, getNettsperreToken } from "$lib/useApi.js"
-  import IconSpinner from "../../lib/components/IconSpinner.svelte"
-  import Searchfield from "../../lib/components/Searchfield.svelte"
+  import IconSpinner from "#lib/components/IconSpinner.svelte"
+  import Searchfield from "#lib/components/Searchfield.svelte"
+  import { syntaxHighlight } from "#lib/helpers/highlight-json.js"
+  import { prettyPrintDate } from "#lib/helpers/pretty-date.js"
+  import { schoolInfoTFK } from "#lib/helpers/tfk-schools.js"
+  import { schoolInfoVFK } from "#lib/helpers/vfk-schools.js"
+  import { superUserImposter, teachersStore } from "#lib/store.js"
+  import { getGroupMembers, getHistory, getNettsperreToken } from "#lib/useApi.js"
 
   let token
   let showDetails = []

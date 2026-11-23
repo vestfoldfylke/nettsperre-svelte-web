@@ -1,15 +1,15 @@
 <script>
   import "../app.css"
   import { onMount } from "svelte"
+  import favTFK from "#lib/assets/favicon-32x32.png"
+  import logoTFK from "#lib/assets/logo.svg"
+  import logoVFK from "#lib/assets/VFK_logo.svg"
+  import favVFK from "#lib/assets/vestfold-favicon-32x32.png"
+  import { getMsalClient, login } from "#lib/auth/msal-auth.js"
+  import IconSpinner from "#lib/components/IconSpinner.svelte"
+  import { getNettsperreToken } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
-  import favTFK from "$lib/assets/favicon-32x32.png"
-  import logoTFK from "$lib/assets/logo.svg"
-  import logoVFK from "$lib/assets/VFK_logo.svg"
-  import favVFK from "$lib/assets/vestfold-favicon-32x32.png"
-  import { getMsalClient, login } from "../lib/auth/msal-auth.js"
-  import IconSpinner from "../lib/components/IconSpinner.svelte"
-  import { getNettsperreToken } from "../lib/useApi.js"
 
   let account = null
 

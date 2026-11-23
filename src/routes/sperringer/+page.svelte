@@ -1,14 +1,14 @@
 <script>
   import { onMount } from "svelte"
   import { get } from "svelte/store"
+  import IconSpinner from "#lib/components/IconSpinner.svelte"
+  import Modal from "#lib/components/Modal.svelte"
+  import { prettyPrintBlock } from "#lib/helpers/pretty-block-type.js"
+  import { prettyPrintDate } from "#lib/helpers/pretty-date.js"
+  import { prettyPrintStatus } from "#lib/helpers/pretty-status.js"
+  import { superUserImposter } from "#lib/store.js"
+  import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
-  import { prettyPrintBlock } from "$lib/helpers/pretty-block-type.js"
-  import { prettyPrintDate } from "$lib/helpers/pretty-date.js"
-  import { prettyPrintStatus } from "$lib/helpers/pretty-status.js"
-  import { superUserImposter } from "$lib/store.js"
-  import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "$lib/useApi.js"
-  import IconSpinner from "../../lib/components/IconSpinner.svelte"
-  import Modal from "../../lib/components/Modal.svelte"
 
   let token
   let showActive = false

@@ -1,10 +1,10 @@
 <script>
   import { onMount } from "svelte"
   import { get } from "svelte/store"
+  import IconSpinner from "#lib/components/IconSpinner.svelte"
+  import { superUserImposter, superUserImposterSessionID, teachersStore } from "#lib/store.js"
+  import { getGroupMembers, getNettsperreToken, validatePermission } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
-  import { superUserImposter, superUserImposterSessionID, teachersStore } from "$lib/store.js"
-  import { getGroupMembers, getNettsperreToken, validatePermission } from "$lib/useApi.js"
-  import IconSpinner from "../../lib/components/IconSpinner.svelte"
 
   let token
   let groupMembersArray

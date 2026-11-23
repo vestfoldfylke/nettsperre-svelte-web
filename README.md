@@ -3,6 +3,7 @@
 ### Nettsperre
 
 Grupper:
+
 1. NETTSPERRE-EKSAMEN-MAN
 <!-- NETTSPERRE-PROVE-MAN -->
 <!-- NETTSPERRE-TEAMS-MAN  -->
@@ -11,6 +12,7 @@ Grupper:
 ### Database
 
 En mongoDB database, se intern docs for detaljer.
+
 #### Collections
 
     Sperringer - inneholder sperringer som venter på å bli aktivert og de som er aktivert. 
@@ -23,6 +25,7 @@ En Webapp med SvelteKit som er hostet i Vercel.
 Løsningen gir lærere og andre superbrukere mulighet til å sperre undervisningsgrupper og enkelt elever fra ulike løsninger og internett.
 
 De ulike sperrene:
+
 1. Prøve. (TBA)
 2. Kun tilgang til teams. (TBA)
 3. Eksamen.
@@ -39,6 +42,7 @@ Se intern docs for detaljer.
 ### App settings
 
 Opprett en .env fil
+
 | Key                       | Value                     | Beskrivelse                                                                          |
 | ------------------------- | ------------------------- | ------------------------------------------------------------------------------------ |
 | VITE_CLIENT_ID            |                           | Klient-ID for applikasjonen                                                          |
@@ -68,10 +72,10 @@ npm run dev
 
 Backend er bygget i azure functions, du kan lese mer om den her: [azf-nettsperre](https://github.com/telemarkfylke/azf-nettsperre)
 
-
 ## Roller
 
 Kort beskrivelse av de ulike rollene, hva de kan gjøre og generelt hvem som har tilgang til rollene.
+
 1. Lærer - default access til applikasjonen. Læreren har lov til å sette sperre på elevene i sin(e) undervisningsgrupper
 2. Superbruker - Ledere/Administrasjon/Servicedesk, lov til å sette sperre på elever/undervinsinsgrupper innad på skolen og på vegne av en lærer.
 3. Admin - Utviklere. Se logger og detaljer i løsningen.
@@ -79,6 +83,7 @@ Kort beskrivelse av de ulike rollene, hva de kan gjøre og generelt hvem som har
 ## Use cases
 
 Generell beskrivelse av noen use cases
+
 ### Lærer 
 
 #### Sperre en enkelt elev

@@ -1,12 +1,12 @@
 <script>
   import { onMount } from "svelte"
   import { get } from "svelte/store"
+  import IconSpinner from "#lib/components/IconSpinner.svelte"
+  import { prettyPrintBlock } from "#lib/helpers/pretty-block-type"
+  import { prettyPrintDate } from "#lib/helpers/pretty-date"
+  import { superUserImposter } from "#lib/store.js"
+  import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
-  import IconSpinner from "../lib/components/IconSpinner.svelte"
-  import { prettyPrintBlock } from "../lib/helpers/pretty-block-type"
-  import { prettyPrintDate } from "../lib/helpers/pretty-date"
-  import { superUserImposter } from "../lib/store.js"
-  import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "../lib/useApi.js"
 
   let showStudents = []
   let showBlock = []
