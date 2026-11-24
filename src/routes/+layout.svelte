@@ -9,7 +9,7 @@
   import IconSpinner from "#lib/components/IconSpinner.svelte"
   import { getNettsperreToken } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   let account = null
 
@@ -21,10 +21,14 @@
       }
 
       if (!account) {
-        const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+        const loginResponse = await login(false, page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+        if (!loginResponse) {
+          return
+        }
+
         account = loginResponse.account
 
-        if ($page.url.pathname !== loginResponse.loginRequestUrl) {
+        if (page.url.pathname !== loginResponse.loginRequestUrl) {
           goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
         }
       }
@@ -142,7 +146,7 @@
             </a>
             {#each sideMenuItems as menuItem}
               <a href={menuItem.href} class="menuLink inward-focus-within">
-                <div class="menuItem{isActiveRoute(menuItem.href, $page.url.pathname) ? ' active' : ''}">
+                <div class="menuItem{isActiveRoute(menuItem.href, page.url.pathname) ? ' active' : ''}">
                   <span class="material-symbols-outlined">{menuItem.icon}</span>
                   <div>{menuItem.title}</div>
                 </div>
@@ -153,7 +157,7 @@
           <div class="menubarMobile">
             {#each sideMenuItems as menuItem}
               <a href={menuItem.href} class="menuLinkMobile inward-focus-within">
-                <div class="menuItemMobile{isActiveRoute(menuItem.href, $page.url.pathname) ? ' active' : ''}">
+                <div class="menuItemMobile{isActiveRoute(menuItem.href, page.url.pathname) ? ' active' : ''}">
                   <span class="material-symbols-outlined">{menuItem.icon}</span>
                   <div>{menuItem.title}</div>
                 </div>
