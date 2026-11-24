@@ -1,4 +1,6 @@
-export const schoolInfoTFK = [
+import type { SchoolInfo } from "../types/school.js"
+
+export const schoolInfoTFK: SchoolInfo[] = [
   {
     officeLocation: "Bamble videregående skole", // Office location som kommer og matcher fra AD (graph)
     primaryLocation: "Bamble videregående skole"

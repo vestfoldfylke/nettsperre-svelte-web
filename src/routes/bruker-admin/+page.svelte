@@ -8,18 +8,19 @@
 
   let token
   let groupMembersArray
+
   $: teachers = ""
   $: errorMsg = ""
   $: searchValue = ""
   $: imposting = ""
   $: error = false
   $: processing = false
-  //$: success = false
 
   onMount(async () => {
     token = await getNettsperreToken(true)
     imposting = get(superUserImposter)
   })
+
   const checkRoles = async (token) => {
     if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
       // Role not found in token roles array, error true
@@ -47,14 +48,17 @@
       const sv = searchValue.toLowerCase()
       return teacher.displayName.toLowerCase().startsWith(sv) || teacher.userPrincipalName.toLowerCase().startsWith(sv)
     }
+
     teachers = groupMembersArray.filter(filterFunc)
   }
 
   const setAdmin = async (requestor, teacher) => {
     processing = true
+
     // Create a random session id (guid) for the user
     const sessionId = crypto.randomUUID()
     superUserImposterSessionID.set(sessionId)
+
     const permission = await validatePermission(requestor, teacher.userPrincipalName, sessionId)
 
     if (permission.status === 200) {

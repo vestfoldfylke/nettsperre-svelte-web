@@ -13,10 +13,12 @@
 
   const search = (searchValue) => {
     inputFieldLength = searchValue.length
+
     const filterFunc = (teacher) => {
       const sv = searchValue.toLowerCase()
       return teacher[propToFilter].toLowerCase().startsWith(sv)
     }
+
     searchResult = arrayData.filter(filterFunc)
   }
 

@@ -10,6 +10,13 @@
   import { deleteBlock, getBlocks, getExtendedUserInfo, getNettsperreToken, getStudents, putBlock } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
 
+  const BLOCK_TYPE_BY_RADIO_VALUE = {
+    Eksamensmodus: "eksamen",
+    fullBlock: "fullBlock",
+    formsFile: "formsFile",
+    forms: "forms"
+  }
+
   let token
   let showActive = false
   let showPending = false
@@ -18,6 +25,7 @@
   let blockedStudents = []
   let allStudents = []
   let studentsToShow = []
+
   $: detailsData = null
   $: blockResponse = null
   $: showDetailsState = false
@@ -65,9 +73,11 @@
     if (field === "date") {
       editBlockDate = !editBlockDate
     }
+
     if (field === "blockType") {
       editBlockType = !editBlockType
     }
+
     if (field === "students") {
       editBlockStudents = !editBlockStudents
     }
@@ -100,67 +110,27 @@
             updatedObj.studentsToRemove.push(studentsSelected)
           }
         }
+
         // Only add students to the list of students to add if the status of the block is pending. Cannot add new students to an active block!
-        if (detailsData.status === "pending") {
-          // Check if the student from studentSelected is not in the list of students already blocked.
-          // If they are not, add them to the list of students to add.
-          if (!detailsData.students.some((student) => student.id === studentsSelected.id)) {
-            updatedObj.studentsToAdd.push(studentsSelected)
-          }
+        // Add the student if they are not in the list of students already blocked.
+        if (detailsData.status === "pending" && !detailsData.students.some((student) => student.id === studentsSelected.id)) {
+          updatedObj.studentsToAdd.push(studentsSelected)
         }
       })
     }
+
     // User should only be able to change the type of the block & startTime if the status is pending.
     if (detailsData.status === "pending") {
-      if (document.querySelector('input[name="radioGroup"]:checked').value === "Eksamensmodus") {
-        if (detailsData.typeBlock.type === "eksamen") {
-          // Do nothing
-        } else {
-          // Add change to updated object
-          updatedObj.typeBlockChange = {
-            oldType: detailsData.typeBlock.type,
-            newType: "eksamen"
-          }
-          // Change type to eksamen
-          detailsData.typeBlock.type = "eksamen"
+      const selectedType = BLOCK_TYPE_BY_RADIO_VALUE[document.querySelector('input[name="radioGroup"]:checked').value]
+      if (selectedType !== undefined && detailsData.typeBlock.type !== selectedType) {
+        updatedObj.typeBlockChange = {
+          oldType: detailsData.typeBlock.type,
+          newType: selectedType
         }
-      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "fullBlock") {
-        if (detailsData.typeBlock.type === "fullBlock") {
-          // Do nothing
-        } else {
-          // Add change to updated object
-          updatedObj.typeBlockChange = {
-            oldType: detailsData.typeBlock.type,
-            newType: "fullBlock"
-          }
-          // Change type to fullBlock
-          detailsData.typeBlock.type = "fullBlock"
-        }
-      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "formsFile") {
-        if (detailsData.typeBlock.type === "formsFile") {
-          // Do nothing
-        } else {
-          // Add change to updated object
-          updatedObj.typeBlockChange = {
-            oldType: detailsData.typeBlock.type,
-            newType: "formsFile"
-          }
-          // Change type to formsFile
-          detailsData.typeBlock.type = "formsFile"
-        }
-      } else if (document.querySelector('input[name="radioGroup"]:checked').value === "forms") {
-        if (detailsData.typeBlock.type === "forms") {
-          // Do nothing
-        } else {
-          // Add change to updated object
-          updatedObj.typeBlockChange = {
-            oldType: detailsData.typeBlock.type,
-            newType: "forms"
-          }
-          // Change type to forms
-          detailsData.typeBlock.type = "forms"
-        }
+
+        detailsData.typeBlock.type = selectedType
       }
+
       // Check if the startTime has been changed
       if (document.getElementById("startTime").value !== detailsData.startBlock) {
         updatedObj.dateBlockChange.start = {
@@ -169,6 +139,7 @@
         }
       }
     }
+
     // Check if the endTime has been changed
     if (document.getElementById("endTime").value !== detailsData.endBlock) {
       updatedObj.dateBlockChange.end = {
@@ -176,7 +147,9 @@
         new: document.getElementById("endTime").value
       }
     }
-    await detailsData.updated.push(updatedObj)
+
+    detailsData.updated.push(updatedObj)
+
     // Post the block to the API
     try {
       processing = true
@@ -190,6 +163,7 @@
   const studentsInBlock = async (detailsData) => {
     blockedStudents = []
     allStudents = []
+
     const studentsInClass = await getStudents(detailsData.blockedGroup.id)
     for (const student of studentsInClass.data) {
       for (const blockedStudent of detailsData.students) {
@@ -198,6 +172,7 @@
         }
       }
     }
+
     // Remove the students that are already in the block from the list of all students.
     allStudents = studentsInClass.data.filter((student) => !detailsData.students.some((blockedStudent) => blockedStudent.id === student.id))
   }
@@ -239,10 +214,12 @@
 
     goto("/sperringer").then(() => goto(thisPage))
   }
+
   // Sort by date, and show only the blocks that are 7 days ahead of today.
   const sortByDate = (blocks) => {
     const today = new Date()
     const sevenDaysAhead = new Date(today.setDate(today.getDate() + 7))
+
     return blocks.filter((block) => new Date(block.startBlock) < sevenDaysAhead)
   }
 

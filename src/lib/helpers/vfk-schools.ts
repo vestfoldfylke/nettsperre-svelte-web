@@ -1,4 +1,6 @@
-export const schoolInfoVFK = [
+import type { SchoolInfo } from "../types/school.js"
+
+export const schoolInfoVFK: SchoolInfo[] = [
   {
     officeLocation: "Holmestrand videregående skole", // Office location som kommer og matcher fra AD (graph)
     primaryLocation: "Holmestrand videregående skole"

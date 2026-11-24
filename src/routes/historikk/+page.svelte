@@ -46,32 +46,42 @@
     blocks.forEach((block) => {
       const year = block.startBlock.split("-")[0]
       const month = block.startBlock.split("-")[1]
+
       // If the month is not in the grouped object, add it
       if (!grouped[month]) {
-        grouped[month] = { year: year, blocks: [] }
+        grouped[month] = {
+          year: year,
+          blocks: []
+        }
       }
-      // If the block is from a previous year, replace the block
+
+      // If the block is from a previous year, replace the block. If the block is from the same year, add it to the array
       if (grouped[month].year < year) {
-        grouped[month] = { year: year, blocks: [block] }
-      }
-      // If the block is from the same year, add it to the array
-      else if (grouped[month].year === year) {
+        grouped[month] = {
+          year: year,
+          blocks: [block]
+        }
+      } else if (grouped[month].year === year) {
         grouped[month].blocks.push(block)
       }
     })
+
     // Flatten the grouped object to only contain blocks
     const flattenedGrouped = {}
     Object.keys(grouped).forEach((month) => {
       flattenedGrouped[month] = grouped[month].blocks
     })
+
     return flattenedGrouped
   }
 
   // Function to get history data
   const getHistoryData = async (token, filter) => {
     groupedHistory = []
+
     // Close all open month blocks
     hideMonthBlock = []
+
     // If the user is a superuser, get history for the selected teacher
     if (token?.roles.includes(`nettsperre.${import.meta.env.VITE_SUPERUSER_ROLE}`)) {
       // If the filter object is not empty, get history for the selected teacher
@@ -90,7 +100,6 @@
     // If the user is not a superuser, get history for the user
     history = await getHistory(token.upn, null, null)
     groupedHistory = await groupByMonth(history.data || [])
-    // Set a sleep to simulate a slow API
     return groupedHistory
   }
 
@@ -99,12 +108,14 @@
     // State for handling div visibility
     showDetails[i] = !showDetails[i]
     showDetailsState = !showDetailsState
+
     // Clear the filter object
     filterObj = {
       teacher: undefined,
       school: undefined,
       class: undefined
     }
+
     detailsData = block
   }
 

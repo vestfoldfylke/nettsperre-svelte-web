@@ -2,8 +2,8 @@
   import { onMount } from "svelte"
   import { get } from "svelte/store"
   import IconSpinner from "#lib/components/IconSpinner.svelte"
-  import { prettyPrintBlock } from "#lib/helpers/pretty-block-type"
-  import { prettyPrintDate } from "#lib/helpers/pretty-date"
+  import { prettyPrintBlock } from "#lib/helpers/pretty-block-type.js"
+  import { prettyPrintDate } from "#lib/helpers/pretty-date.js"
   import { superUserImposter } from "#lib/store.js"
   import { getClasses, getExtendedUserInfo, getNettsperreToken, getStudents, postBlock } from "#lib/useApi.js"
   import { goto } from "$app/navigation"
@@ -14,6 +14,7 @@
   let divAlreadyOpen = []
   let missingFields = []
   let token
+
   $: processing = false
   $: blockResponse = null
   $: isMissingFields = false
@@ -40,6 +41,7 @@
       // State for handling div visibility
       showBlock[i] = !showBlock[i]
     }
+
     // State for handling div visibility
     showStudents[i] = !showStudents[i]
     // State for handling button text
@@ -54,6 +56,7 @@
       // State for handling button text
       showStudentsState[i] = !showStudentsState[i]
     }
+
     // State for handling div visibility
     showBlock[i] = !showBlock[i]
   }
@@ -82,17 +85,9 @@
       startBlock: undefined, // Timestamp
       endBlock: undefined, // Timestamp
       createdTimeStamp: undefined, // Timestamp
-      updated: [
-        // {
-        //     timestamp: 'undefined', // Timestamp
-        //     updatedBy: {
-        //         userId: 'undefined',
-        //         userPrincipalName: 'undefined',
-        //         displayName: 'undefined',
-        //     }
-        // }
-      ]
+      updated: []
     }
+
     if (document.querySelectorAll('input[name="selectedStudents"]:checked').length > 0) {
       document.querySelectorAll('input[name="selectedStudents"]:checked').forEach((e) => {
         blockObject.students.push(JSON.parse(e.value))
@@ -114,11 +109,13 @@
     } else if (document.querySelector('input[name="radioGroup"]:checked')?.value === "forms") {
       blockObject.typeBlock.type = "forms"
     }
+
     blockObject.startBlock = document.getElementById("startTime")?.value
     blockObject.endBlock = document.getElementById("endTime")?.value
 
     // Reset the isMissingFields state
     isMissingFields = false
+
     // Check if all fields are filled out
     if (blockObject.typeBlock.type === undefined || blockObject.startBlock === "" || blockObject.endBlock === "" || blockObject.students.length <= 0) {
       isMissingFields = true
@@ -126,16 +123,20 @@
       if (blockObject.students.length <= 0) {
         missingFields.push("Du må velge minst en elev som skal sperres.")
       }
+
       if (blockObject.typeBlock.type === undefined) {
         missingFields.push("Du må velge en sperremodus.")
       }
+
       if (blockObject.startBlock === "") {
         missingFields.push("Du må velge et start tidspunkt.")
       }
+
       if (blockObject.endBlock === "") {
         missingFields.push("Du må velge et slutt tidspunkt.")
       }
     }
+
     if (isMissingFields === false) {
       try {
         processing = true
@@ -155,11 +156,13 @@
       // State for handling button text
       showStudentsState[i] = !showStudentsState[i]
     }
+
     if (divAlreadyOpen && showBlock[i]) {
       // State for handling div visibility
       showBlock[i] = !showBlock[i]
     }
   }
+
   const reloadPage = () => {
     // Reset states
     blockResponse = null
