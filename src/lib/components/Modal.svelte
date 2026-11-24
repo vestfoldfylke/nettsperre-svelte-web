@@ -1,18 +1,20 @@
 <script>
-	export let showModal // boolean
-	export let disableClickOutSide = false // boolean
-	export let disableStandardButton = false // boolean
+  export let showModal // boolean
+  export let disableClickOutSide = false // boolean
+  export let disableStandardButton = false // boolean
 
-	let dialog // HTMLDialogElement
+  let dialog // HTMLDialogElement
 
-	$: if (dialog && showModal) dialog.showModal()
+  $: if (dialog && showModal) {
+    dialog.showModal()
+  }
 
-	const closeModal = () => {
-		// Endable scrolling when modal is closed
-		document.body.style.height = "auto"
-		document.body.style.overflow = "auto"
-		dialog.close()
-	}
+  const closeModal = () => {
+    // Endable scrolling when modal is closed
+    document.body.style.height = "auto"
+    document.body.style.overflow = "auto"
+    dialog.close()
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->

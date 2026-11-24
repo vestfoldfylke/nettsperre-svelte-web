@@ -4,82 +4,82 @@
 
 /* COMMON CSS */
 body {
-	margin: 0;
-	padding: 0;
-	font-family: "Nunito Sans", Lato, "Trebuchet MS", sans-serif;
-	height: 100%;
-	min-height: 95vh;
-	width: 100vw;
-	line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito Sans", Lato, "Trebuchet MS", sans-serif;
+  height: 100%;
+  min-height: 95vh;
+  width: 100vw;
+  line-height: 1.4;
 }
 
 * {
-	box-sizing: border-box;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	image-rendering: -webkit-optimize-contrast;
-	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-	padding: 0;
-	margin: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  padding: 0;
+  margin: 0;
 }
 
 /* VARIABLES */
 :root {
-	/* COLORS */
-	--vann-10: #e5eeef;
-	--vann-20: #ccdcdf;
-	--vann-30: #b2cbcf;
-	--vann-40: #99babf;
-	--vann-50: #80a8af;
-	--vann-60: #6697a0;
-	--vann-70: #4c8690;
-	--vann-80: #337580;
-	--vann-90: #196370;
-	--vann: #005260;
+  /* COLORS */
+  --vann-10: #e5eeef;
+  --vann-20: #ccdcdf;
+  --vann-30: #b2cbcf;
+  --vann-40: #99babf;
+  --vann-50: #80a8af;
+  --vann-60: #6697a0;
+  --vann-70: #4c8690;
+  --vann-80: #337580;
+  --vann-90: #196370;
+  --vann: #005260;
 
-	--himmel-10: #e5f5f9;
-	--himmel-20: #ccebf3;
-	--himmel-30: #b2e1ed;
-	--himmel-40: #99d7e7;
-	--himmel-50: #80cde0;
-	--himmel-60: #66c3da;
-	--himmel-70: #4cb9d4;
-	--himmel-80: #33afce;
-	--himmel-90: #19a5c8;
-	--himmel: #005260;
+  --himmel-10: #e5f5f9;
+  --himmel-20: #ccebf3;
+  --himmel-30: #b2e1ed;
+  --himmel-40: #99d7e7;
+  --himmel-50: #80cde0;
+  --himmel-60: #66c3da;
+  --himmel-70: #4cb9d4;
+  --himmel-80: #33afce;
+  --himmel-90: #19a5c8;
+  --himmel: #005260;
 
-	--nype-10: #f8e8ec;
-	--nype-20: #f1d1d8;
-	--nype-30: #e9b9c5;
-	--nype-40: #e2a2b1;
-	--nype-50: #db8b9e;
-	--nype-60: #d4748b;
-	--nype-70: #cd5d77;
-	--nype-80: #c54564;
-	--nype-90: #be2e50;
-	--nype: #b7173d;
+  --nype-10: #f8e8ec;
+  --nype-20: #f1d1d8;
+  --nype-30: #e9b9c5;
+  --nype-40: #e2a2b1;
+  --nype-50: #db8b9e;
+  --nype-60: #d4748b;
+  --nype-70: #cd5d77;
+  --nype-80: #c54564;
+  --nype-90: #be2e50;
+  --nype: #b7173d;
 
-	--plomme-10: #eeeaef;
-	--plomme-20: #ded5df;
-	--plomme-30: #cdc0d0;
-	--plomme-40: #bdabc0;
-	--plomme-50: #ac96b0;
-	--plomme-60: #9c82a0;
-	--plomme-70: #8b6d90;
-	--plomme-80: #7b5881;
-	--plomme-90: #19a5c8;
-	--plomme: #6a4371;
+  --plomme-10: #eeeaef;
+  --plomme-20: #ded5df;
+  --plomme-30: #cdc0d0;
+  --plomme-40: #bdabc0;
+  --plomme-50: #ac96b0;
+  --plomme-60: #9c82a0;
+  --plomme-70: #8b6d90;
+  --plomme-80: #7b5881;
+  --plomme-90: #19a5c8;
+  --plomme: #6a4371;
 
-	--gress-10: #e9f4ef;
-	--gress-20: #d2eae0;
-	--gress-30: #bcdfd0;
-	--gress-40: #a5d5c0;
-	--gress-50: #8fcab0;
-	--gress-60: #79bfa1;
-	--gress-70: #62b591;
-	--gress-80: #4caa81;
-	--gress-90: #35a072;
-	--gress: #1f9562;
+  --gress-10: #e9f4ef;
+  --gress-20: #d2eae0;
+  --gress-30: #bcdfd0;
+  --gress-40: #a5d5c0;
+  --gress-50: #8fcab0;
+  --gress-60: #79bfa1;
+  --gress-70: #62b591;
+  --gress-80: #4caa81;
+  --gress-90: #35a072;
+  --gress: #1f9562;
 }
 
 /* HTML Elements styling */
@@ -87,66 +87,66 @@ input,
 select,
 textarea,
 button {
-	font-family: inherit;
-	font-size: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 button {
-	padding: 4px;
-	cursor: pointer;
-	background-color: var(--himmel-20);
-	border: 1px solid black;
-	border-radius: 5px;
+  padding: 4px;
+  cursor: pointer;
+  background-color: var(--himmel-20);
+  border: 1px solid black;
+  border-radius: 5px;
 }
 
 button.link {
-	padding: 0;
-	background-color: inherit;
-	border: none;
-	text-decoration: underline;
-	color: var(--vann-10);
+  padding: 0;
+  background-color: inherit;
+  border: none;
+  text-decoration: underline;
+  color: var(--vann-10);
 }
 
 button.link span {
-	font-size: 18px;
-	padding: 0 5px;
-	vertical-align: middle;
+  font-size: 18px;
+  padding: 0 5px;
+  vertical-align: middle;
 }
 button:hover {
-	background-color: var(--himmel-30);
+  background-color: var(--himmel-30);
 }
 button.link:hover {
-	background-color: inherit;
-	color: #000;
+  background-color: inherit;
+  color: #000;
 }
 
 button[disabled] {
-	background-color: var(--himmel-10);
-	cursor: not-allowed;
+  background-color: var(--himmel-10);
+  cursor: not-allowed;
 }
 
 button[icon] {
-	all: unset;
-	cursor: pointer;
+  all: unset;
+  cursor: pointer;
 }
 
 dialog {
-	width: 80vw;
-	height: 80vh;
-	margin: auto;
-	border: none;
-	padding: 32px;
+  width: 80vw;
+  height: 80vh;
+  margin: auto;
+  border: none;
+  padding: 32px;
 }
 dialog::backdrop {
-	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
-	animation: fade-in 1s;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+  animation: fade-in 1s;
 }
 
 @keyframes fade-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
